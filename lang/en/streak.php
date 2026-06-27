@@ -78,11 +78,15 @@ $string['yourstreak'] = 'Your streak (visible only to you): {$a}';
 $string['settings:defaults'] = 'Default settings for new Solin Streaks activities';
 $string['settings:freezerate'] = 'Freeze accrual rate';
 $string['settings:freezerate_desc'] = 'Grant one streak freeze per this many successful periods (0 to disable).';
+$string['settings:freezerate_help'] = 'The default for new Solin Streaks activities. A learner earns one streak freeze for every this many successful periods, up to the maximum below. A freeze automatically forgives a single missed period so an occasional gap does not reset the streak. Enter 0 to switch freezes off. Each activity can override this default.';
 $string['settings:freezecap'] = 'Maximum freezes';
+$string['settings:freezecap_help'] = 'The default for new Solin Streaks activities. The largest number of unused freezes a learner can hold at once. Once they reach this cap, no further freezes accrue until one is used. Each activity can override this default.';
 $string['settings:reminderhour'] = 'Reminder hour';
 $string['settings:reminderhour_desc'] = 'Local hour of day (0-23) at which the daily at-risk check runs.';
+$string['settings:reminderhour_help'] = 'The hour of day (0-23) at which the daily check for at-risk streaks runs and make-or-break reminders are sent. Delivery still respects each learner\'s own notification preferences and quiet hours. This is a single site-wide value.';
 $string['settings:breakscalendar'] = 'Site-wide breaks calendar';
 $string['settings:breakscalendar_desc'] = 'Holiday/term-break date ranges applied to every course, one per line as "YYYY-MM-DD, YYYY-MM-DD". During a break, learners keep their streak without doing anything. Lines starting with # are ignored.';
+$string['settings:breakscalendar_help'] = 'Holiday and term-break date ranges that apply to every course on the site. Enter one range per line as two ISO dates separated by a comma: "YYYY-MM-DD, YYYY-MM-DD". During a break, learners keep their streak without doing anything and reminders pause. Lines starting with # are ignored. Individual activities can add their own breaks on top of these.';
 
 // Scheduled task + reminders.
 $string['task:rollover'] = 'Solin Streaks roll-over and reminders';
