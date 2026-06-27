@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/streak/db" VERSION="20260617" COMMENT="Solin Streaks (mod_streak) schema."
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  <TABLES>
+    <TABLE NAME="streak" COMMENT="Solin Streaks activity instances (one per course; single-instance enforced).">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="cadenceperiod" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="daily" SEQUENCE="false" COMMENT="daily|weekly|fortnightly|monthly"/>
+        <FIELD NAME="cadencegoal" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Qualifying days required per period."/>
+        <FIELD NAME="qualifymode" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="anycompletion" SEQUENCE="false" COMMENT="anycompletion|courseprogress|login"/>
+        <FIELD NAME="modfilterexclude" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="CSV of excluded module types."/>
+        <FIELD NAME="freezerate" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="4" SEQUENCE="false" COMMENT="Grant 1 freeze per N successful periods; 0 = none."/>
+        <FIELD NAME="freezecap" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="2" SEQUENCE="false"/>
+        <FIELD NAME="enddatemode" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="course" SEQUENCE="false" COMMENT="course|custom|none"/>
+        <FIELD NAME="customenddate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="reminderhour" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="18" SEQUENCE="false" COMMENT="Local hour for the daily make-or-break check."/>
+        <FIELD NAME="earlyheadsup" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="breakscalendar" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Multiline YYYY-MM-DD, YYYY-MM-DD calendar."/>
+        <FIELD NAME="rewardbreaks" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="excludestaff" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="excluderoles" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="streak_state" COMMENT="Per-learner streak state, keyed by activity instance.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="streakid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="currentstreak" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Committed completed periods."/>
+        <FIELD NAME="displaystreak" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cached displayed streak = committed periods plus the open one when its goal is met. The single value read by both the headline and the leaderboard so they always agree."/>
+        <FIELD NAME="longeststreak" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="currentperiodstart" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = not started."/>
+        <FIELD NAME="currentperioddaysmet" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastqualifyingday" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="YYYYMMDD in learner TZ."/>
+        <FIELD NAME="lastreminderday" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="YYYYMMDD of last make-or-break reminder."/>
+        <FIELD NAME="lastearlyheadsup" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Period-start epoch the early heads-up last fired for."/>
+        <FIELD NAME="lastcourseprogress" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Completed-criteria count for course-progress mode."/>
+        <FIELD NAME="freezesavailable" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="freezesused" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="streakstart" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = not started."/>
+        <FIELD NAME="optout" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="frozenfinal" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="finalrank" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="streakiduserid" TYPE="unique" FIELDS="streakid, userid"/>
+        <KEY NAME="streakid" TYPE="foreign" FIELDS="streakid" REFTABLE="streak" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="streakidcurrentstreak" UNIQUE="false" FIELDS="streakid, currentstreak"/>
+        <INDEX NAME="streakidperiod" UNIQUE="false" FIELDS="streakid, currentperiodstart"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="streak_day" COMMENT="Credited-day ledger; one row per learner-local qualifying day.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="streakid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="day" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="YYYYMMDD in learner TZ at credit time."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="streakiduseridday" TYPE="unique" FIELDS="streakid, userid, day"/>
+        <KEY NAME="streakid" TYPE="foreign" FIELDS="streakid" REFTABLE="streak" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

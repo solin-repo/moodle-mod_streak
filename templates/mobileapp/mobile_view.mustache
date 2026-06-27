@@ -1,0 +1,48 @@
+{{!
+    @template mod_streak/mobileapp/mobile_view
+
+    Moodle App view for a Solin Streaks activity (Ionic components).
+
+    Context variables required for this template:
+    * name string The activity name
+    * display int The learner's current streak to show
+    * started bool Whether the learner has started a streak
+    * hasrows bool Whether there are leaderboard rows
+    * rows array Leaderboard rows: rank, name, streak, isme
+
+    Example context (json):
+    {
+        "name": "Your daily streak",
+        "display": 12,
+        "started": true,
+        "hasrows": true,
+        "rows": [
+            {"rank": 1, "name": "Ana Garcia", "streak": 42, "isme": false}
+        ]
+    }
+}}
+<ion-card class="mod-streak-mobile">
+    <ion-card-header>
+        <ion-card-subtitle>{{name}}</ion-card-subtitle>
+        {{#started}}
+            <ion-card-title><ion-icon name="flame" style="color: #f97316;"></ion-icon> {{display}}</ion-card-title>
+        {{/started}}
+        {{^started}}
+            <ion-card-title>{{#str}} notstarted, mod_streak {{/str}}</ion-card-title>
+        {{/started}}
+    </ion-card-header>
+</ion-card>
+
+{{#hasrows}}
+<ion-list>
+    <ion-list-header>
+        <ion-label>{{#str}} leaderboard, mod_streak {{/str}}</ion-label>
+    </ion-list-header>
+    {{#rows}}
+    <ion-item {{#isme}}color="light"{{/isme}}>
+        <ion-label>{{rank}}. {{name}}</ion-label>
+        <ion-badge slot="end"><ion-icon name="flame"></ion-icon> {{streak}}</ion-badge>
+    </ion-item>
+    {{/rows}}
+</ion-list>
+{{/hasrows}}

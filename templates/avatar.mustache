@@ -1,0 +1,29 @@
+{{!
+    @template mod_streak/avatar
+
+    A learner avatar: their uploaded photo when present, otherwise a deterministic colored initials
+    disc so the row still reads as an individual. Rendered from data only, so a theme can fully
+    restyle it (override this template or the .mod-streak-avatar* CSS).
+
+    Context variables required for this template:
+    * haspicture bool Whether the user has an uploaded picture
+    * pictureurl string The picture URL (when haspicture)
+    * initials string Up to two initials (when not haspicture)
+    * colorindex int Palette index 0-7 (when not haspicture)
+    * large bool Render the larger headline variant
+
+    Example context (json):
+    {
+        "haspicture": false,
+        "pictureurl": "",
+        "initials": "AG",
+        "colorindex": 2,
+        "large": true
+    }
+}}
+{{#haspicture}}
+    <img class="mod-streak-avatar{{#large}} mod-streak-avatar-lg{{/large}}" src="{{pictureurl}}" alt="">
+{{/haspicture}}
+{{^haspicture}}
+    <span class="mod-streak-avatar mod-streak-initials mod-streak-avatar-c{{colorindex}}{{#large}} mod-streak-avatar-lg{{/large}}" aria-hidden="true">{{initials}}</span>
+{{/haspicture}}

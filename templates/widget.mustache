@@ -1,0 +1,135 @@
+{{!
+    @template mod_streak/widget
+
+    The per-learner inline streak widget shown on the course page: the learner's own streak
+    plus the per-course leaderboard.
+
+    Context variables required for this template:
+    * started bool Whether the learner has started a streak
+    * display int The streak value to show
+    * unit string The "N-unit streak" label
+    * progress string Intra-period progress text (empty for daily / when not shown)
+    * myavatar object The viewer's own avatar data (see mod_streak/avatar; large=true)
+    * hasmilestone bool Whether to show progress (true once started)
+    * milestonepercent int Percent (0-100) toward the goal (course length, or the current week)
+    * milestonemode string "course" (goal = course length) or "weekly" (no end date: rolling week)
+    * milestonecaption string Localized progress caption ("N of M days" / "Day N of 7 this week")
+    * milestonemarkers array Weekly marker angles for a ring: [{angle}] (course mode; empty otherwise)
+    * hasmyrank bool Whether the viewer's leaderboard rank is known
+    * myranklabel string "#N of M" rank label (when hasmyrank)
+    * hasboard bool Whether the leaderboard is shown
+    * hasrows bool Whether there are leaderboard rows
+    * rows array Leaderboard rows: rank, ismedal, medalname, avatar (object), name, streak, isme
+    * hasmore bool Whether the board is longer than the inline cap
+    * boardnote string "Showing the top N of M" note (when hasmore)
+    * optout bool Whether the viewer has opted out of the leaderboard
+    * toggleurl string URL to toggle the viewer's opt-out state
+
+    Example context (json):
+    {
+        "started": true,
+        "display": 12,
+        "unit": "day streak",
+        "progress": "",
+        "myavatar": {"haspicture": false, "pictureurl": "", "initials": "AG", "colorindex": 2, "large": true},
+        "hasmilestone": true,
+        "milestonepercent": 65,
+        "milestonemode": "course",
+        "milestonecaption": "39 of 60 days",
+        "milestonemarkers": [{"angle": 42}, {"angle": 84}],
+        "hasmyrank": true,
+        "myranklabel": "#3 of 24",
+        "hasboard": true,
+        "hasrows": true,
+        "rows": [{"rank": 1, "ismedal": true, "medalname": "gold", "avatar": {"haspicture": false, "pictureurl": "", "initials": "AG", "colorindex": 2}, "name": "Ana Garcia", "streak": 42, "isme": false}],
+        "hasmore": false,
+        "boardnote": "",
+        "optout": false,
+        "toggleurl": "https://example.com/mod/streak/view.php?id=1&action=optout&sesskey=abc"
+    }
+}}
+<div class="mod-streak-widget">
+    <div class="mod-streak-headline">
+        <div class="mod-streak-me-avatar">{{#myavatar}}{{> mod_streak/avatar }}{{/myavatar}}</div>
+        <div class="mod-streak-me-text">
+            {{#started}}
+                <div class="mod-streak-figure">
+                    <span class="mod-streak-flame">{{display}}</span>
+                    <span class="mod-streak-unit">{{unit}}</span>
+                </div>
+                <div class="mod-streak-eyebrow">
+                    <span class="mod-streak-you">{{#str}} youlabel, mod_streak {{/str}}</span>
+                    {{#hasmyrank}}<span class="mod-streak-myrank">{{myranklabel}}</span>{{/hasmyrank}}
+                </div>
+                {{#progress}}<span class="mod-streak-progress">{{progress}}</span>{{/progress}}
+                {{#hasmilestone}}
+                    <div class="mod-streak-milestone">
+                        <div class="mod-streak-milestone-bar">
+                            <span class="mod-streak-milestone-fill" style="width: {{milestonepercent}}%;"></span>
+                        </div>
+                        <div class="mod-streak-milestone-caption">{{milestonecaption}}</div>
+                    </div>
+                {{/hasmilestone}}
+            {{/started}}
+            {{^started}}
+                <span class="mod-streak-notstarted">{{#str}} notstarted, mod_streak {{/str}}</span>
+                <div class="mod-streak-eyebrow">
+                    <span class="mod-streak-you">{{#str}} youlabel, mod_streak {{/str}}</span>
+                </div>
+            {{/started}}
+        </div>
+    </div>
+    {{#hasboard}}
+        <h5 class="mod-streak-boardtitle">{{#str}} leaderboard, mod_streak {{/str}}</h5>
+        {{#hasrows}}
+            <table class="generaltable mod-streak-board">
+                <thead>
+                    <tr>
+                        <th scope="col" class="mod-streak-col-rank">{{#str}} rank, mod_streak {{/str}}</th>
+                        <th scope="col">{{#str}} participant, mod_streak {{/str}}</th>
+                        <th scope="col" class="mod-streak-col-streak">{{#str}} currentstreak, mod_streak {{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                        <tr class="{{#isme}}mod-streak-me{{/isme}}">
+                            <td class="mod-streak-rankcell">
+                                {{#ismedal}}
+                                    <span class="mod-streak-medal mod-streak-medal-{{medalname}}" aria-label="{{#str}} rank, mod_streak {{/str}} {{rank}}">
+                                        <span class="mod-streak-medalicon" aria-hidden="true"></span>
+                                    </span>
+                                {{/ismedal}}
+                                {{^ismedal}}
+                                    <span class="mod-streak-rank">{{rank}}</span>
+                                {{/ismedal}}
+                            </td>
+                            <td class="mod-streak-participant">
+                                {{#avatar}}{{> mod_streak/avatar }}{{/avatar}}
+                                <span class="mod-streak-name">{{name}}</span>
+                            </td>
+                            <td class="mod-streak-streakcell">
+                                <span class="mod-streak-flameicon" aria-hidden="true"></span>
+                                <span class="mod-streak-streakval">{{streak}}</span>
+                            </td>
+                        </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+            {{#hasmore}}
+                <div class="mod-streak-boardnote">{{boardnote}}</div>
+            {{/hasmore}}
+        {{/hasrows}}
+        {{^hasrows}}
+            <div class="mod-streak-empty">{{#str}} nobodyyet, mod_streak {{/str}}</div>
+        {{/hasrows}}
+        {{#optout}}
+            <div class="mod-streak-optnotice">{{#str}} optedoutnotice, mod_streak {{/str}}</div>
+        {{/optout}}
+        <div class="mod-streak-optout">
+            <a class="mod-streak-optlink" href="{{toggleurl}}">
+                {{#optout}}{{#str}} optin, mod_streak {{/str}}{{/optout}}
+                {{^optout}}{{#str}} optout, mod_streak {{/str}}{{/optout}}
+            </a>
+        </div>
+    {{/hasboard}}
+</div>

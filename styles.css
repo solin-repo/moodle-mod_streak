@@ -1,0 +1,248 @@
+/* Solin Streaks — design tokens.
+   The flame accent is a fixed brand color (never theme-derived); everything else leans on Boost.
+   See docs/streaks-design-system.md for the rationale and the asset/icon pipeline. */
+/* Tokens on both render paths: the inline widget and the standalone full board (view.php),
+   which is not wrapped in .mod-streak-widget. */
+.mod-streak-widget,
+.mod-streak-board {
+    --streak-flame: #f97316;        /* brand flame (orange-500), fixed */
+    --streak-flame-strong: #ea580c; /* orange-600, for emphasis */
+    --streak-medal-gold: #f5b301;
+    --streak-medal-silver: #9aa3ad;
+    --streak-medal-bronze: #c77b3b;
+    --streak-rank-bg: #eef1f4;
+    --streak-rank-fg: #4b5563;
+    --streak-me-bg: #fff7ed;
+}
+.mod-streak-widget {
+    padding: 0.5rem 0;
+}
+
+/* Headline: the learner's own streak, anchored by their avatar (same one as their board row). */
+.mod-streak-headline {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+}
+.mod-streak-me-avatar {
+    flex: 0 0 auto;
+}
+.mod-streak-me-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.mod-streak-figure {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+.mod-streak-flame {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--streak-flame);
+}
+.mod-streak-unit {
+    color: #6b7280;
+}
+.mod-streak-eyebrow {
+    margin-top: 0.1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+.mod-streak-you {
+    font-weight: 600;
+}
+.mod-streak-myrank::before {
+    content: "·";
+    margin: 0 0.35rem;
+    color: #9aa3ad;
+}
+.mod-streak-progress {
+    margin-top: 0.1rem;
+    color: #4b5563;
+}
+/* Next-milestone progress: a slim bar in the default widget (a theme can render the same
+   percent as a ring). */
+.mod-streak-milestone {
+    margin-top: 0.4rem;
+    max-width: 16rem;
+}
+.mod-streak-milestone-bar {
+    height: 0.4rem;
+    background: var(--streak-rank-bg);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.mod-streak-milestone-fill {
+    display: block;
+    height: 100%;
+    background: var(--streak-flame);
+    border-radius: 999px;
+}
+.mod-streak-milestone-caption {
+    margin-top: 0.2rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+.mod-streak-notstarted {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Brand flame icon: one SVG asset (pix/flame.svg), masked so a single token recolors it.
+   Replaces the per-OS-inconsistent emoji. */
+.mod-streak-flameicon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+    background-color: var(--streak-flame);
+    -webkit-mask: url('[[pix:mod_streak|flame]]') no-repeat center / contain;
+    mask: url('[[pix:mod_streak|flame]]') no-repeat center / contain;
+}
+/* Leaderboard table. Capped so it does not stretch the full page width on large screens. */
+.mod-streak-boardtitle {
+    margin-top: 0.75rem;
+}
+.mod-streak-board {
+    max-width: 640px;
+}
+.mod-streak-board td {
+    vertical-align: middle;
+}
+
+/* Opt-out control + notes below the inline leaderboard. */
+.mod-streak-optout {
+    margin-top: 0.75rem;
+}
+.mod-streak-optlink {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.mod-streak-optnotice {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+}
+.mod-streak-boardnote {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+.mod-streak-col-rank {
+    width: 4rem;
+    white-space: nowrap;
+}
+.mod-streak-col-streak {
+    width: 5rem;
+}
+.mod-streak-board .mod-streak-me {
+    background-color: var(--streak-me-bg);
+    font-weight: bold;
+}
+
+/* Rank column: medals for the top three, a neutral numbered disc for the rest. */
+.mod-streak-rankcell {
+    text-align: center;
+}
+.mod-streak-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--streak-rank-bg);
+    color: var(--streak-rank-fg);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+/* Medals: a masked SVG (pix/crown.svg or pix/medal.svg) tinted by a color token. Both the glyph
+   (override pix/crown.svg, pix/medal.svg via the theme) and the color (override the --streak-medal-*
+   tokens) are theme-replaceable. See docs/streaks-theming-contract.md. */
+.mod-streak-medal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.mod-streak-medalicon {
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-color: currentColor;
+    -webkit-mask: var(--streak-medal-mask) no-repeat center / contain;
+    mask: var(--streak-medal-mask) no-repeat center / contain;
+}
+.mod-streak-medal-gold {
+    color: var(--streak-medal-gold);
+    --streak-medal-mask: url('[[pix:mod_streak|crown]]');
+}
+.mod-streak-medal-silver {
+    color: var(--streak-medal-silver);
+    --streak-medal-mask: url('[[pix:mod_streak|medal]]');
+}
+.mod-streak-medal-bronze {
+    color: var(--streak-medal-bronze);
+    --streak-medal-mask: url('[[pix:mod_streak|medal]]');
+}
+
+/* Participant column: avatar (real photo or deterministic initials disc) + name. */
+.mod-streak-participant {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.mod-streak-avatar {
+    flex: 0 0 auto;
+    border-radius: 50%;
+}
+/* Uploaded-photo avatars render as a plain <img> sized here (board default, then headline variant). */
+img.mod-streak-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    object-fit: cover;
+}
+img.mod-streak-avatar.mod-streak-avatar-lg {
+    width: 2.75rem;
+    height: 2.75rem;
+}
+.mod-streak-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+/* Larger headline variant of the initials disc (matches the 44px user_picture size). */
+.mod-streak-initials.mod-streak-avatar-lg {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.05rem;
+}
+/* Deterministic avatar palette (index = userid % 8). Muted, theme-friendly hues. */
+.mod-streak-avatar-c0 { background: #5b8def; }
+.mod-streak-avatar-c1 { background: #e2725b; }
+.mod-streak-avatar-c2 { background: #3fa796; }
+.mod-streak-avatar-c3 { background: #b06fb0; }
+.mod-streak-avatar-c4 { background: #d98b3a; }
+.mod-streak-avatar-c5 { background: #6c8a4e; }
+.mod-streak-avatar-c6 { background: #c0577f; }
+.mod-streak-avatar-c7 { background: #4f7d9c; }
+
+/* Streak column: brand flame + value. */
+.mod-streak-streakcell {
+    white-space: nowrap;
+    color: var(--streak-flame-strong);
+    font-weight: 600;
+}
+
+.mod-streak-empty {
+    color: #6b7280;
+}
