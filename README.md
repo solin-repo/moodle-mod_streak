@@ -11,7 +11,15 @@ The streak and the leaderboard render **inline on the course page** (there is no
 separate page to visit) and the plugin ships **no JavaScript**: everything is
 server-rendered HTML and CSS, themeable through templates and CSS tokens.
 
-**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-27 · **Maintainer:** Solin (Onno Schuit)
+Because every visual decision lives in the theme, the same plugin suits very different
+audiences: corporate compliance, onboarding, and L&D programs as readily as schools,
+universities, and language learning. The two leaderboards below are the **identical
+activity** — a corporate theme (Cadence) on the left, a playful educational theme
+(Waddle) on the right.
+
+![The Solin Streaks streak counter and per-course leaderboard shown side by side in two themes: a corporate theme (Cadence) on the left and a playful educational theme (Waddle) on the right — the same activity skinned for each audience](docs/screenshots/leaderboard-both.png)
+
+**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-28 · **Maintainer:** Solin (Onno Schuit)
 
 ## Compatibility
 
@@ -114,10 +122,14 @@ at any time from the widget.
 | `reminderhour` | Hour of day reminders are sent. |
 | Breaks calendar | Site-wide holiday ranges that never break a streak. |
 
+![Site-wide default settings for new Solin Streaks activities: freeze accrual rate, maximum freezes, reminder hour, and the site-wide breaks calendar, each with inline help text](docs/screenshots/site-defaults.png)
+
 **Per-activity settings** (on the activity's settings form) let a teacher override the
 cadence and goal, choose the qualifying action, set the end-date mode (course end /
 custom / evergreen), tune the freeze policy and reward, and exclude staff or specific
 roles from the leaderboard.
+
+![The per-activity settings form, showing the Solin Streaks section: streak period, qualifying days per period, and what counts as a qualifying day](docs/screenshots/activity-settings.png)
 
 ## Capabilities
 
@@ -155,6 +167,11 @@ lives in the templates and CSS. A theme can override, in increasing order of eff
 the CSS tokens (`--streak-*` custom properties), the pix icons (the flame and medals),
 the Mustache templates (`mod_streak/widget`, `mod_streak/avatar`), or the plugin
 renderer. No plugin changes are needed to restyle the streak or the board.
+
+This is what lets the same streak serve a corporate intranet and a classroom equally
+well: the two themes shown at the top of this page (Cadence and Waddle) are the same
+activity with different CSS tokens, pix icons, and templates — the plugin code is
+identical in both.
 
 ## Testing
 
