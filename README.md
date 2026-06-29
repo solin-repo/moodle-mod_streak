@@ -233,12 +233,20 @@ vendor/bin/phpunit --testsuite mod_streak_testsuite
 - A working `cron` (the streak roll-over, lifecycle freezing, and reminders run from a
   scheduled task).
 
-## Support and bug reports
+## Issue tracker
 
 Please report bugs and feature requests in GitHub Issues:
 <https://github.com/solin-repo/moodle-mod_streak/issues>
 
-Commercial Moodle development and support is available from Solin: <https://solin.co>.
+## Commercial extensions and support
+
+The free plugin keeps the leaderboard per-course and ships a neutral, themable look.
+Solin offers paid add-ons on top of it: branded **theme skins** that restyle the streak
+counter and leaderboard to match a site's design (for example the corporate "Cadence" and
+playful animal-mascot looks), plus additional **gamification mechanics** (extended reward
+rules, badges, and cross-course, cohort, and site-wide streak aggregation with
+institution-facing engagement dashboards). Fixed-price configuration and Moodle/Totara
+development and support services are also available from Solin: <https://solin.co>.
 
 ## Documentation
 
