@@ -175,7 +175,7 @@ identical in both.
 
 The two themes are full Moodle experiences, not just a restyled widget. The same streak
 mechanics sit inside each — a warm, restrained corporate look (Cadence) and a playful,
-Duolingo-style educational look (Waddle), shown below as both the logged-in dashboard
+game-like educational look (Waddle), shown below as both the logged-in dashboard
 and the marketing landing page:
 
 ![A 2x2 showcase of the two example themes: the Cadence corporate theme (dashboard and marketing landing page) on the top row, and the Waddle educational theme (dashboard and marketing landing page) on the bottom row, demonstrating the same Solin Streaks plugin skinned for very different audiences](docs/screenshots/themes-showcase.png)
