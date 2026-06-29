@@ -19,7 +19,7 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 ![The Solin Streaks streak counter and per-course leaderboard shown side by side in two themes: a corporate theme (Cadence) on the left and a playful educational theme (Waddle) on the right — the same activity skinned for each audience](docs/screenshots/leaderboard-both.png)
 
-**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-28 · **Maintainer:** Solin (Onno Schuit)
+**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-29 · **Maintainer:** Solin (Onno Schuit)
 
 ## Compatibility
 
@@ -172,6 +172,13 @@ This is what lets the same streak serve a corporate intranet and a classroom equ
 well: the two themes shown at the top of this page (Cadence and Waddle) are the same
 activity with different CSS tokens, pix icons, and templates — the plugin code is
 identical in both.
+
+The two themes are full Moodle experiences, not just a restyled widget. The same streak
+mechanics sit inside each — a warm, restrained corporate look (Cadence) and a playful,
+Duolingo-style educational look (Waddle), shown below as both the logged-in dashboard
+and the marketing landing page:
+
+![A 2x2 showcase of the two example themes: the Cadence corporate theme (dashboard and marketing landing page) on the top row, and the Waddle educational theme (dashboard and marketing landing page) on the bottom row, demonstrating the same Solin Streaks plugin skinned for very different audiences](docs/screenshots/themes-showcase.png)
 
 ## Testing
 
