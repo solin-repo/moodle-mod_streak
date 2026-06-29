@@ -1,18 +1,22 @@
 # Solin Streaks (mod_streak)
 
-Solin Streaks adds a daily-practice learning streak to any Moodle course. Each learner
-gets a personal streak counter that grows every day (or week) they do a qualifying
-activity, a streak "freeze" that forgives the occasional missed day, gentle
-make-or-break reminders, and a friendly per-course leaderboard. It turns "I should
-keep up with this course" into a visible, rewarding habit, and gives whoever runs the
+Solin Streaks adds a regular-practice learning streak to Moodle courses where learners
+are expected to return and complete meaningful activity over time. Teachers add one
+Solin Streaks activity to a course, choose a cadence such as daily practice, once a week,
+or 3 days per week, and decide which course actions count.
+
+Each learner gets a personal streak counter, streak freezes for occasional missed
+periods, gentle make-or-break reminders, and a friendly per-course leaderboard. It turns
+"I should keep up with this course" into a visible habit, and gives whoever runs the
 course an at-a-glance picture of who is showing up consistently.
 
-The streak and the leaderboard render **inline on the course page** (there is no
-separate page to visit) and the plugin ships **no JavaScript**: everything is
-server-rendered HTML and CSS, themeable through templates and CSS tokens.
+The streak counter and leaderboard render **inline on the course page**, so learners do
+not need to open a separate activity page to use the plugin. The plugin ships **no
+JavaScript**: everything is server-rendered HTML and CSS, themeable through templates and
+CSS tokens.
 
 Because every visual decision lives in the theme, the same plugin suits very different
-audiences: corporate compliance, onboarding, and L&D programs as readily as schools,
+audiences: recurring compliance programs, onboarding, professional development, schools,
 universities, and language learning. The two leaderboards below are the **identical
 activity** — a corporate theme (Cadence) on the left, a playful educational theme
 (Waddle) on the right.
@@ -23,20 +27,18 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 ## Compatibility
 
-The same plugin code runs unchanged on Moodle 4.5 LTS through 5.2. Pick the branch that
-matches your Moodle version:
+The same plugin codebase supports Moodle 4.5 LTS through 5.2.
 
-| Moodle | PHP | Plugin path | Branch |
-|--------|-----|-------------|--------|
-| 5.2 | 8.3+ | `public/mod/streak` | `MOODLE_502_STABLE` |
-| 5.1 | 8.2+ | `public/mod/streak` | `MOODLE_501_STABLE` |
-| 5.0 | 8.2+ | `mod/streak` | `main` |
-| 4.5 LTS | 8.1+ | `mod/streak` | `main` |
+| Moodle | PHP | Plugin path |
+|--------|-----|-------------|
+| 5.2 | 8.3+ | `public/mod/streak` |
+| 5.1 | 8.2+ | `public/mod/streak` |
+| 5.0 | 8.2+ | `mod/streak` |
+| 4.5 LTS | 8.1+ | `mod/streak` |
 
 Any database supported by your Moodle version works (MySQL / MariaDB / PostgreSQL); the
 plugin uses only the portable Moodle DML API. Moodle 5.1 moved the web root into a
-`public/` directory (4.5 and 5.0 still use the classic root layout), which is the only
-reason the install path differs between versions. All four are tested with the same code.
+`public/` directory, which is the only reason the install path differs between versions.
 
 ## What it does
 
@@ -49,19 +51,32 @@ reason the install path differs between versions. All four are tested with the s
 - **Make-or-break reminders.** Delivered through Moodle's Message API (email, web
   notification, and mobile push where available), only when a streak is actually at
   risk, and respecting each user's notification preferences.
-- **Per-course leaderboard.** Course participants ranked by current streak, with
-  photo or coloured-initials avatars and top-three medals. Ranking is privacy-aware:
-  any learner can **opt out** and is then removed from everyone else's view while still
-  seeing their own private counter.
+- **Per-course leaderboard.** Course participants ranked by current streak, with photo
+  or colored-initials avatars and top-three medals. Ranking is privacy-aware: any learner
+  can **opt out** and is then removed from everyone else's view while still seeing their
+  own private counter.
 - **Streak lifecycle / end date.** Use the course end date, a custom end date, or run
-  evergreen. At the end date the leaderboard freezes into a final standing ("You
-  finished with a 42-day streak, rank #3 of 60") instead of vanishing.
-- **Qualifying action.** By default any activity completion counts toward the day; the
-  qualifying mode is configurable per activity.
+  evergreen. At the end date the leaderboard freezes into a final standing ("You finished
+  with a 42-day streak, rank #3 of 60") instead of vanishing.
+- **Qualifying action.** Choose what counts toward a day: any activity completion (the
+  default), a course-progress advance, or login only. See
+  [Qualifying actions](#qualifying-actions).
 - **Institutional breaks.** A site holiday calendar so scheduled closures do not break
   anyone's streak.
 - **Themeable and mobile-ready.** Override templates, pix icons, CSS tokens, or the
   renderer without forking; the activity also renders in the Moodle App.
+
+## When to use this plugin
+
+Solin Streaks is designed for courses where regular activity is meaningful: daily
+practice, weekly compliance tasks, recurring onboarding steps, exam preparation, spaced
+repetition, micro-learning, language learning, or professional-development programs that
+run over a longer period. It is especially useful where learners are expected to return
+regularly — once a day, once a week, or several times a month.
+
+It is usually not a good fit for one-off compliance modules, short courses where learners
+only need to complete a single activity once, or courses without repeatable or
+completion-tracked learner activity.
 
 ## How a streak works
 
@@ -74,20 +89,19 @@ never disagree.
 
 ## Installation
 
-**Via the admin UI (recommended):** download the ZIP for your Moodle version, then go to
-*Site administration → Plugins → Install plugins*, upload the ZIP, and follow the upgrade
-prompts.
+**Via the admin UI (recommended):** download the ZIP, then go to *Site administration →
+Plugins → Install plugins*, upload the ZIP, and follow the upgrade prompts.
 
-**Via Git:** clone the branch that matches your Moodle version into the module directory.
+**Via Git:** clone the repository into the module directory for your Moodle layout.
 
 ```bash
-# Moodle 5.x (public/ layout)
+# Moodle 5.1+ (public/ layout)
 cd /path/to/moodle/public/mod
-git clone -b MOODLE_502_STABLE https://github.com/solin-repo/moodle-mod_streak.git streak
+git clone https://github.com/solin-repo/moodle-mod_streak.git streak
 
-# Moodle 4.5 LTS
+# Moodle 4.5 LTS and 5.0
 cd /path/to/moodle/mod
-git clone -b main https://github.com/solin-repo/moodle-mod_streak.git streak
+git clone https://github.com/solin-repo/moodle-mod_streak.git streak
 ```
 
 Then finish the install from *Site administration → Notifications*, or on the command
@@ -131,6 +145,19 @@ roles from the leaderboard.
 
 ![The per-activity settings form, showing the Solin Streaks section: streak period, qualifying days per period, and what counts as a qualifying day](docs/screenshots/activity-settings.png)
 
+## Qualifying actions
+
+What counts as a qualifying day is set per activity, through the *qualifying action*
+setting, in one of three modes:
+
+- **Any activity completion** (the default): completing any completion-tracked activity
+  in the course credits the day.
+- **Course progress advanced**: the day is credited only when the learner's
+  course-completion progress moves forward.
+- **Login only**: any login while enrolled in the course credits the day. This is the
+  lightest and most easily gamed mode, and is best reserved for courses where completion
+  tracking is not available.
+
 ## Capabilities
 
 | Capability | Default roles | Allows |
@@ -160,13 +187,19 @@ plugin stores three tables:
 A full Privacy API provider is implemented: a user's streak data can be exported and
 deleted, individually or in bulk, including the userlist (bulk) requests.
 
+## Backup and restore
+
+Course backup and restore are fully supported. The activity's configuration is included
+in every course backup. Each learner's streak state and credited-day history are included
+only when the backup is taken with user data.
+
 ## Theming
 
 The widget is a templatable renderable that returns pure data, so every visual decision
-lives in the templates and CSS. A theme can override, in increasing order of effort:
-the CSS tokens (`--streak-*` custom properties), the pix icons (the flame and medals),
-the Mustache templates (`mod_streak/widget`, `mod_streak/avatar`), or the plugin
-renderer. No plugin changes are needed to restyle the streak or the board.
+lives in the templates and CSS. A theme can override, in increasing order of effort: the
+CSS tokens (`--streak-*` custom properties), the pix icons (the flame and medals), the
+Mustache templates (`mod_streak/widget`, `mod_streak/avatar`), or the plugin renderer. No
+plugin changes are needed to restyle the streak or the board.
 
 This is what lets the same streak serve a corporate intranet and a classroom equally
 well: the two themes shown at the top of this page (Cadence and Waddle) are the same
@@ -175,8 +208,8 @@ identical in both.
 
 The two themes are full Moodle experiences, not just a restyled widget. The same streak
 mechanics sit inside each — a warm, restrained corporate look (Cadence) and a playful,
-game-like educational look (Waddle), shown below as both the logged-in dashboard
-and the guest homepage:
+game-like educational look (Waddle), shown below as both the logged-in dashboard and the
+guest homepage:
 
 ![A 2x2 showcase of the two example themes: the Cadence corporate theme (dashboard and guest homepage) on the top row, and the Waddle educational theme (dashboard and guest homepage) on the bottom row, demonstrating the same Solin Streaks plugin skinned for very different audiences](docs/screenshots/themes-showcase.png)
 
@@ -185,7 +218,9 @@ and the guest homepage:
 The plugin ships a full automated test suite: **62 PHPUnit tests** covering the streak
 engine, cadence, evaluator, leaderboard, reminders, backup/restore, privacy, and the
 output classes, plus **3 Behat scenarios** for the inline display, leaderboard opt-out,
-and the one-activity-per-course rule. All pass on Moodle 4.5, 5.1, and 5.2.
+and the one-activity-per-course rule. The suite passes on Moodle 4.5 LTS, where the plugin
+is actively developed; the same code targets 5.0, 5.1, and 5.2, with a CI matrix across
+all supported versions planned.
 
 ```bash
 php admin/tool/phpunit/cli/init.php
@@ -197,6 +232,18 @@ vendor/bin/phpunit --testsuite mod_streak_testsuite
 - Moodle and PHP versions per the compatibility table above.
 - A working `cron` (the streak roll-over, lifecycle freezing, and reminders run from a
   scheduled task).
+
+## Support and bug reports
+
+Please report bugs and feature requests in GitHub Issues:
+<https://github.com/solin-repo/moodle-mod_streak/issues>
+
+Commercial Moodle development and support is available from Solin: <https://solin.co>.
+
+## Documentation
+
+This README is the primary documentation. Additional material, including the screenshots
+used here, lives in the `docs/` directory.
 
 ## License and credits
 
