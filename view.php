@@ -40,7 +40,8 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/streak:view', $context);
 
-// Toggle the viewer's leaderboard visibility, then send them back to the inline widget.
+// Toggle the viewer's leaderboard visibility (the web opt-out link), then send them back to
+// the inline widget. The Moodle App shows the streak read-only, so opt-out is web-only.
 if ($action !== '' && confirm_sesskey()) {
     $mystate = state::get_or_create($streak->id, (int) $USER->id);
     $mystate->optout = ($action === 'optout') ? 1 : 0;

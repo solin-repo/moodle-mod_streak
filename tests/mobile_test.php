@@ -56,4 +56,26 @@ final class mobile_test extends \advanced_testcase {
         $this->assertArrayHasKey('otherdata', $result);
         $this->assertArrayHasKey('files', $result);
     }
+
+    public function test_mobile_coursepage_view_is_read_only(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        $module = $this->getDataGenerator()->create_module('streak',
+            ['course' => $course->id, 'name' => 'Daily streak']);
+
+        $this->setUser($student);
+        $PAGE->set_url('/');
+
+        $result = mobile::mobile_coursepage_view(['cmid' => $module->cmid, 'courseid' => $course->id]);
+        $html = $result['templates'][0]['html'];
+
+        // The app view shows the streak read-only; leaderboard opt-out is web-only, so the
+        // inline app view must NOT carry an opt-out control or web service call.
+        $this->assertStringContainsString('Daily streak', $html);
+        $this->assertStringNotContainsString('action=optout', $html);
+        $this->assertStringNotContainsString('mod_streak_set_optout', $html);
+    }
 }

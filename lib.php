@@ -45,8 +45,9 @@ function streak_supports($feature) {
         case FEATURE_MOD_PURPOSE:
             return MOD_PURPOSE_INTERACTIVECONTENT;
         case FEATURE_NO_VIEW_LINK:
-            // The streak and leaderboard render inline on the course page, so the activity
-            // has no separate view page (just like a label).
+            // The streak and leaderboard render inline on the course page, so the activity has
+            // no separate view page (like a label). The Moodle App shows the same inline view,
+            // read-only.
             return true;
         default:
             return null;
