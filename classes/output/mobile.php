@@ -23,6 +23,10 @@ use mod_streak\local\leaderboard;
 /**
  * Moodle App output handler for mod_streak.
  *
+ * The app shows the streak counter and leaderboard read-only. Leaderboard opt-out is a
+ * web-only feature: the app renders activity content as static HTML, so an interactive
+ * toggle cannot work on the course page, and learners manage visibility on the website.
+ *
  * @package    mod_streak
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,12 +34,33 @@ use mod_streak\local\leaderboard;
 class mobile {
 
     /**
-     * Render the streak view for the Moodle App (CoreCourseModuleDelegate).
+     * Streak view used when the activity is opened in the app.
      *
      * @param array $args App args, including courseid and cmid.
      * @return array Templates + data for the app.
      */
     public static function mobile_course_view(array $args): array {
+        return self::render($args, 'mod_streak/mobileapp/mobile_view');
+    }
+
+    /**
+     * Compact streak view rendered inline on the course page.
+     *
+     * @param array $args App args, including courseid and cmid.
+     * @return array Templates + data for the app.
+     */
+    public static function mobile_coursepage_view(array $args): array {
+        return self::render($args, 'mod_streak/mobileapp/mobile_coursepage');
+    }
+
+    /**
+     * Build the streak data and render it with the given template.
+     *
+     * @param array $args App args, including cmid.
+     * @param string $template The mustache template to render.
+     * @return array Templates + data for the app.
+     */
+    private static function render(array $args, string $template): array {
         global $OUTPUT, $DB, $USER;
 
         $args = (object) $args;
@@ -47,7 +72,6 @@ class mobile {
         $streak = $DB->get_record('streak', ['id' => $cm->instance], '*', MUST_EXIST);
         $state = state::get_or_create($streak->id, (int) $USER->id);
         $display = evaluator::display_streak($streak, $state, time());
-        $state = state::get_or_create($streak->id, (int) $USER->id);
 
         $rows = [];
         if (has_capability('mod/streak:viewleaderboard', $context)) {
@@ -76,7 +100,7 @@ class mobile {
             'templates' => [
                 [
                     'id'   => 'main',
-                    'html' => $OUTPUT->render_from_template('mod_streak/mobileapp/mobile_view', $data),
+                    'html' => $OUTPUT->render_from_template($template, $data),
                 ],
             ],
             'javascript' => '',

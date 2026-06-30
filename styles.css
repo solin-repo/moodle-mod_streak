@@ -227,14 +227,30 @@ img.mod-streak-avatar.mod-streak-avatar-lg {
     font-size: 1.05rem;
 }
 /* Deterministic avatar palette (index = userid % 8). Muted, theme-friendly hues. */
-.mod-streak-avatar-c0 { background: #5b8def; }
-.mod-streak-avatar-c1 { background: #e2725b; }
-.mod-streak-avatar-c2 { background: #3fa796; }
-.mod-streak-avatar-c3 { background: #b06fb0; }
-.mod-streak-avatar-c4 { background: #d98b3a; }
-.mod-streak-avatar-c5 { background: #6c8a4e; }
-.mod-streak-avatar-c6 { background: #c0577f; }
-.mod-streak-avatar-c7 { background: #4f7d9c; }
+.mod-streak-avatar-c0 {
+    background: #5b8def;
+}
+.mod-streak-avatar-c1 {
+    background: #e2725b;
+}
+.mod-streak-avatar-c2 {
+    background: #3fa796;
+}
+.mod-streak-avatar-c3 {
+    background: #b06fb0;
+}
+.mod-streak-avatar-c4 {
+    background: #d98b3a;
+}
+.mod-streak-avatar-c5 {
+    background: #6c8a4e;
+}
+.mod-streak-avatar-c6 {
+    background: #c0577f;
+}
+.mod-streak-avatar-c7 {
+    background: #4f7d9c;
+}
 
 /* Streak column: brand flame + value. */
 .mod-streak-streakcell {

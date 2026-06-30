@@ -35,6 +35,9 @@ $addons = [
                 ],
                 'delegate' => 'CoreCourseModuleDelegate',
                 'method'   => 'mobile_course_view',
+                // Render the compact streak view inline on the course page (instead of
+                // the unstyled web widget) so the Moodle App leaderboard stays tidy.
+                'coursepagemethod' => 'mobile_coursepage_view',
             ],
         ],
         'lang' => [

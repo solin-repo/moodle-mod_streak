@@ -1,8 +1,11 @@
 {{!
-    @template mod_streak/mobileapp/mobile_view
+    @template mod_streak/mobileapp/mobile_coursepage
 
-    Moodle App view for a Solin Streaks activity (Ionic components). Read-only: the
-    streak counter and leaderboard only. Leaderboard opt-out is a web-only feature.
+    Compact Solin Streaks view rendered INLINE on the Moodle App course page.
+
+    The streak counter and leaderboard are read-only here. Leaderboard opt-out is a
+    web-only feature (the app renders course-page content as static HTML, so an
+    interactive toggle cannot work); learners manage visibility on the website.
 
     Context variables required for this template:
     * name string The activity name

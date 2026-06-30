@@ -76,16 +76,27 @@ final class observer {
      * @param \core\event\user_loggedin $event The event.
      */
     public static function user_loggedin(\core\event\user_loggedin $event): void {
+        global $DB;
+
         $userid = (int) $event->objectid;
         if (empty($userid)) {
             return;
         }
+
+        // Fetch every login-mode streak across the user's enrolled courses in ONE query, rather than
+        // looking the streak up per course (which on the login hot path is an N+1 that scales with the
+        // learner's enrolment count).
+        $courseids = array_keys(enrol_get_all_users_courses($userid, true, 'id'));
+        if (empty($courseids)) {
+            return;
+        }
+        [$insql, $params] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'c');
+        $params['qmode'] = qualifier::MODE_LOGIN;
+        $instances = $DB->get_records_select('streak', "course $insql AND qualifymode = :qmode", $params);
+
         $when = (int) $event->timecreated;
-        foreach (enrol_get_all_users_courses($userid, true, 'id') as $course) {
-            $instance = streak::for_course((int) $course->id);
-            if ($instance !== null && $instance->qualifymode === qualifier::MODE_LOGIN) {
-                evaluator::credit($instance, $userid, $when);
-            }
+        foreach ($instances as $instance) {
+            evaluator::credit($instance, $userid, $when);
         }
     }
 }

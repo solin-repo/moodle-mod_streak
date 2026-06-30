@@ -27,6 +27,7 @@ use mod_streak\local\state;
  * @package    mod_streak
  * @covers     \mod_streak\observer
  * @covers     \mod_streak\local\evaluator
+ * @covers     \mod_streak\task\rollover_task
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -82,5 +83,39 @@ final class rollover_test extends \advanced_testcase {
         $this->assertSame(39, evaluator::display_streak($streak, $state, $now));
         $board = leaderboard::fetch($streak, $context);
         $this->assertSame(39, (int) $board['rows'][$student->id]->displaystreak);
+    }
+
+    public function test_scheduled_task_freezes_streak_at_course_end(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        // A course-date streak whose course has already ended: the rollover task must freeze it.
+        $now = time();
+        $course = $this->getDataGenerator()->create_course([
+            'startdate' => $now - (30 * DAYSECS),
+            'enddate'   => $now - DAYSECS,
+        ]);
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+
+        /** @var \mod_streak_generator $gen */
+        $gen = $this->getDataGenerator()->get_plugin_generator('mod_streak');
+        $created = $gen->create_instance([
+            'course'        => $course->id,
+            'cadenceperiod' => 'daily',
+            'qualifymode'   => 'anycompletion',
+            'enddatemode'   => 'course',
+            'excludestaff'  => 0,
+        ]);
+        $streak = $DB->get_record('streak', ['id' => $created->id], '*', MUST_EXIST);
+
+        // Start an active streak before the course end date.
+        evaluator::credit($streak, (int) $student->id, $now - (5 * DAYSECS));
+        $this->assertSame(0, (int) state::get_or_create($streak->id, (int) $student->id)->frozenfinal);
+
+        // Running the task resolves the course end date once per streak and freezes the ended streak.
+        (new \mod_streak\task\rollover_task())->execute();
+
+        $state = state::get_or_create($streak->id, (int) $student->id);
+        $this->assertSame(1, (int) $state->frozenfinal);
     }
 }
