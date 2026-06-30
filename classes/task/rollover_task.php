@@ -49,11 +49,15 @@ class rollover_task extends \core\task\scheduled_task {
         $now = time();
         $streaks = $DB->get_recordset('streak');
         foreach ($streaks as $streak) {
+            // Resolve the lifecycle end date once per streak: every learner of this streak shares the
+            // same course, so resolving it inside the per-learner loop would re-query the same course
+            // row once per learner (an N+1). Pass the resolved value into apply_lifecycle() instead.
+            $end = evaluator::resolved_end_date($streak);
             $states = $DB->get_recordset('streak_state', ['streakid' => $streak->id]);
             foreach ($states as $state) {
                 // The row apply_lifecycle() returns is already current, so reuse it directly rather
                 // than re-reading the same record from the database on every iteration.
-                $updated = evaluator::apply_lifecycle($streak, $state, $now);
+                $updated = evaluator::apply_lifecycle($streak, $state, $now, $end);
                 reminder::process($streak, $updated, $now);
             }
             $states->close();

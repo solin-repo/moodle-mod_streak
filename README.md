@@ -23,7 +23,7 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 ![The Solin Streaks streak counter and per-course leaderboard shown side by side in two themes: a corporate theme (Cadence) on the left and a playful educational theme (Waddle) on the right — the same activity skinned for each audience](docs/screenshots/leaderboard-both.png)
 
-**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-29 · **Maintainer:** Solin (Onno Schuit)
+**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-30 · **Maintainer:** Solin (Onno Schuit)
 
 ## Compatibility
 
@@ -245,7 +245,7 @@ Solin offers paid add-ons on top of it: branded **theme skins** that restyle the
 counter and leaderboard to match a site's design (for example the corporate "Cadence" and
 playful animal-mascot looks), plus additional **gamification mechanics** (extended reward
 rules, badges, and cross-course, cohort, and site-wide streak aggregation with
-institution-facing engagement dashboards). Fixed-price configuration and Moodle/Totara
+institution-facing engagement dashboards). Fixed-price configuration and Moodle
 development and support services are also available from Solin: <https://solin.co>.
 
 ## Documentation

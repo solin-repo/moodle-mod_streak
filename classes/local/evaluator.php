@@ -235,13 +235,18 @@ final class evaluator {
      * @param \stdClass $streak The streak instance.
      * @param \stdClass $state The learner's state.
      * @param int $now Reference time.
+     * @param int|null $end Pre-resolved lifecycle end epoch (pass it when looping over many learners of
+     *  the same streak so the course end date is resolved once per streak, not once per learner; null
+     *  resolves it here).
      * @return \stdClass The (possibly frozen) state.
      */
-    public static function apply_lifecycle(\stdClass $streak, \stdClass $state, int $now): \stdClass {
+    public static function apply_lifecycle(\stdClass $streak, \stdClass $state, int $now, ?int $end = null): \stdClass {
         if ((int) $state->frozenfinal === 1 || (int) $state->streakstart === 0) {
             return $state;
         }
-        $end = self::resolved_end_date($streak);
+        if ($end === null) {
+            $end = self::resolved_end_date($streak);
+        }
         if ($end > 0 && $now >= $end) {
             $state = self::ensure_current($streak, $state, $end);
             $state->frozenfinal = 1;
