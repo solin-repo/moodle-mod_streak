@@ -27,7 +27,6 @@ use mod_streak\local\milestone;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class milestone_test extends \advanced_testcase {
-
     public function test_course_progress_fills_toward_the_goal(): void {
         // A 60-day course, 39-day streak: the ring is 39/60, not a band fraction.
         $p = milestone::progress(39, 60);

@@ -34,7 +34,6 @@ use core_privacy\local\request\writer;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class privacy_provider_test extends \core_privacy\tests\provider_testcase {
-
     public function test_export_and_delete(): void {
         global $DB;
         $this->resetAfterTest();
@@ -78,7 +77,7 @@ final class privacy_provider_test extends \core_privacy\tests\provider_testcase 
 
         // The metadata describes both stored tables.
         $collection = provider::get_metadata(new collection('mod_streak'));
-        $tables = array_map(static function($item) {
+        $tables = array_map(static function ($item) {
             return $item->get_name();
         }, $collection->get_collection());
         $this->assertContains('streak_state', $tables);

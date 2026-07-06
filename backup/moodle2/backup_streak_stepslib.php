@@ -28,7 +28,6 @@
  * @package    mod_streak
  */
 class backup_streak_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * Build the backup tree.
      *

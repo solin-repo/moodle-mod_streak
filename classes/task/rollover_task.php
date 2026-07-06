@@ -30,7 +30,6 @@ use mod_streak\local\reminder;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rollover_task extends \core\task\scheduled_task {
-
     /**
      * Task name shown in the admin UI.
      *

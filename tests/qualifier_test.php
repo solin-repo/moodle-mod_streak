@@ -27,7 +27,6 @@ use mod_streak\local\qualifier;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class qualifier_test extends \advanced_testcase {
-
     public function test_is_completed_state(): void {
         $this->assertTrue(qualifier::is_completed_state(COMPLETION_COMPLETE));
         $this->assertTrue(qualifier::is_completed_state(COMPLETION_COMPLETE_PASS));

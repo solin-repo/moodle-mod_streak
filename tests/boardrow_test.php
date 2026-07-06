@@ -27,7 +27,6 @@ use mod_streak\local\boardrow;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class boardrow_test extends \advanced_testcase {
-
     public function test_medal_name_for_top_three_only(): void {
         $this->assertSame('gold', boardrow::medal_name(1));
         $this->assertSame('silver', boardrow::medal_name(2));

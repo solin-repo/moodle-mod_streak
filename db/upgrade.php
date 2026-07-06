@@ -35,8 +35,16 @@ function xmldb_streak_upgrade($oldversion) {
     if ($oldversion < 2026061808) {
         // Cached displayed streak, so the headline and the leaderboard read the same value.
         $table = new xmldb_table('streak_state');
-        $field = new xmldb_field('displaystreak', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0',
-            'currentstreak');
+        $field = new xmldb_field(
+            'displaystreak',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            null,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'currentstreak'
+        );
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -53,7 +61,8 @@ function xmldb_streak_upgrade($oldversion) {
                     SET displaystreak = currentstreak
                         + CASE WHEN currentperioddaysmet >= ? THEN 1 ELSE 0 END
                   WHERE streakid = ?",
-                [$goal, $streak->id]);
+                [$goal, $streak->id]
+            );
         }
         $streaks->close();
 

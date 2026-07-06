@@ -39,7 +39,6 @@ use templatable;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class widget implements renderable, templatable {
-
     /** @var int How many leaderboard rows to show inline on the course page (bounded to avoid
      * rendering an unbounded table; a note is shown when the board is longer than this). */
     private const INLINE_ROWS = 50;
@@ -57,6 +56,8 @@ final class widget implements renderable, templatable {
     private int $cmid;
 
     /**
+     * Constructor.
+     *
      * @param \stdClass $streak The streak instance.
      * @param int $userid The viewing user's id.
      * @param int $now Reference time.
@@ -114,8 +115,11 @@ final class widget implements renderable, templatable {
         $started = state::has_started($state);
         $ms = milestone::progress($display, milestone::goal_periods($streak));
         if ($ms['mode'] === 'course') {
-            $milestonecaption = get_string('milestonecourse', 'mod_streak',
-                (object) ['value' => $ms['value'], 'goal' => $ms['goal']]);
+            $milestonecaption = get_string(
+                'milestonecourse',
+                'mod_streak',
+                (object) ['value' => $ms['value'], 'goal' => $ms['goal']]
+            );
         } else {
             $milestonecaption = get_string('milestoneweekly', 'mod_streak', (object) ['value' => $ms['value']]);
         }

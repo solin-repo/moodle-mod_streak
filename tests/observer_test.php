@@ -30,7 +30,6 @@ use mod_streak\local\streak;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class observer_test extends \advanced_testcase {
-
     /**
      * A login credits the login-mode streak in an enrolled course, and leaves a non-login streak alone.
      */
@@ -121,7 +120,10 @@ final class observer_test extends \advanced_testcase {
 
         // Seven extra streak-less courses would have meant seven extra reads pre-fix; assert the cost
         // stays essentially flat (small slack for unrelated per-call variance).
-        $this->assertLessThanOrEqual($few + 2, $many,
-            'login-observer DB reads scale with enrolment count — the per-course N+1 has regressed');
+        $this->assertLessThanOrEqual(
+            $few + 2,
+            $many,
+            'login-observer DB reads scale with enrolment count — the per-course N+1 has regressed'
+        );
     }
 }

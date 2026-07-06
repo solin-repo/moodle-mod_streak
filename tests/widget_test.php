@@ -28,7 +28,6 @@ use mod_streak\output\widget;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class widget_test extends \advanced_testcase {
-
     public function test_rank_in_returns_board_position(): void {
         // Ordered board page keyed by user id, as leaderboard::fetch returns it.
         $rows = [

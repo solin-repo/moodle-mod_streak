@@ -28,7 +28,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class boardrow {
-
     /** @var int Number of avatar color tokens defined in styles.css (.mod-streak-avatar-c0..c7). */
     private const AVATAR_COLORS = 8;
 

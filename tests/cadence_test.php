@@ -27,7 +27,6 @@ use mod_streak\local\cadence;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class cadence_test extends \advanced_testcase {
-
     /** @var \DateTimeZone Amsterdam timezone used across the cases. */
     private \DateTimeZone $ams;
 

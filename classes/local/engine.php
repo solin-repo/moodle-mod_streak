@@ -28,7 +28,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class engine {
-
     /** @var string The period goal was met: streak grows. */
     public const OUTCOME_INCREMENT = 'increment';
     /** @var string Period failed but a freeze was spent: streak preserved. */
@@ -50,8 +49,15 @@ final class engine {
      * @param int $freezecap Maximum freezes a learner may bank.
      * @return \stdClass {currentstreak, longeststreak, freezesavailable, freezesused, outcome}
      */
-    public static function evaluate_period(\stdClass $state, int $metdays, int $nonbreakdays, int $goal,
-            bool $rewardbreaks, int $freezerate, int $freezecap): \stdClass {
+    public static function evaluate_period(
+        \stdClass $state,
+        int $metdays,
+        int $nonbreakdays,
+        int $goal,
+        bool $rewardbreaks,
+        int $freezerate,
+        int $freezecap
+    ): \stdClass {
 
         $result = (object) [
             'currentstreak'    => (int) $state->currentstreak,

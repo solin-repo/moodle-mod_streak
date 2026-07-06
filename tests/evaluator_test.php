@@ -28,7 +28,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class evaluator_test extends \advanced_testcase {
-
     /** @var int A UTC user's id, for predictable day boundaries. */
     private int $userid;
 

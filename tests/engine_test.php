@@ -27,7 +27,6 @@ use mod_streak\local\engine;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class engine_test extends \advanced_testcase {
-
     /**
      * Build a state snapshot.
      *
