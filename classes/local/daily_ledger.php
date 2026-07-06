@@ -25,7 +25,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class daily_ledger {
-
     /**
      * Credit a qualifying day, idempotently.
      *

@@ -27,7 +27,6 @@ use mod_streak\local\breaks;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class breaks_test extends \advanced_testcase {
-
     public function test_parse_and_sort(): void {
         $text = "# Term breaks\n2026-07-06, 2026-07-10\n\n2026-05-01, 2026-05-01\n";
         $ranges = breaks::parse($text);

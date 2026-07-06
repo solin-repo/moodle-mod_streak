@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class lib_test extends \advanced_testcase {
-
     /**
      * The feature flags describe an inline, no-view-link, ungraded interactive activity.
      *

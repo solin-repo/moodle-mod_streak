@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Coverage information for mod_streak (the whole class tree plus the procedural module API).
+ */
 return new class extends phpunit_coverage_info {
     /** @var array The whole class tree (engine, output, privacy, local, admin, tasks). */
     protected $includelistfolders = [

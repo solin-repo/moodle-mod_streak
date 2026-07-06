@@ -28,7 +28,6 @@
  * @package    mod_streak
  */
 class mod_streak_generator extends testing_module_generator {
-
     /**
      * Create a Solin Streaks instance.
      *

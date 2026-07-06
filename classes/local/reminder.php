@@ -24,7 +24,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class reminder {
-
     /**
      * The pure make-or-break rule: due when acting today is now required to keep the goal.
      *

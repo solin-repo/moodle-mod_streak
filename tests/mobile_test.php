@@ -28,15 +28,16 @@ use mod_streak\output\mobile;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class mobile_test extends \advanced_testcase {
-
     public function test_mobile_course_view_returns_widget_template(): void {
         global $DB, $PAGE;
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
         $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
-        $module = $this->getDataGenerator()->create_module('streak',
-            ['course' => $course->id, 'name' => 'Daily streak']);
+        $module = $this->getDataGenerator()->create_module(
+            'streak',
+            ['course' => $course->id, 'name' => 'Daily streak']
+        );
 
         // Give the learner a streak so the board has a row.
         $streak = $DB->get_record('streak', ['id' => $module->id], '*', MUST_EXIST);
@@ -63,8 +64,10 @@ final class mobile_test extends \advanced_testcase {
 
         $course = $this->getDataGenerator()->create_course();
         $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
-        $module = $this->getDataGenerator()->create_module('streak',
-            ['course' => $course->id, 'name' => 'Daily streak']);
+        $module = $this->getDataGenerator()->create_module(
+            'streak',
+            ['course' => $course->id, 'name' => 'Daily streak']
+        );
 
         $this->setUser($student);
         $PAGE->set_url('/');

@@ -27,7 +27,6 @@ use mod_streak\local\streak;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class streak_test extends \advanced_testcase {
-
     public function test_for_course_instance_and_memo(): void {
         global $DB;
         $this->resetAfterTest();

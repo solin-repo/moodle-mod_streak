@@ -29,7 +29,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class reminder_test extends \advanced_testcase {
-
     public function test_is_make_or_break_rule(): void {
         $this->assertTrue(reminder::is_make_or_break(2, 2));   // Every remaining day now required.
         $this->assertFalse(reminder::is_make_or_break(3, 2));  // Still a day of buffer.

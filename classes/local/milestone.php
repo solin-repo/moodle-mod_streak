@@ -30,7 +30,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class milestone {
-
     /** @var int Periods in the milestone cadence and the no-end-date fallback window (a week). */
     private const WEEK = 7;
 

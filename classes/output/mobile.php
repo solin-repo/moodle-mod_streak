@@ -32,7 +32,6 @@ use mod_streak\local\leaderboard;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mobile {
-
     /**
      * Streak view used when the activity is opened in the app.
      *
