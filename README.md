@@ -78,6 +78,21 @@ It is usually not a good fit for one-off compliance modules, short courses where
 only need to complete a single activity once, or courses without repeatable or
 completion-tracked learner activity.
 
+## Why an activity module, not a block?
+
+Solin Streaks is deliberately an activity module, even though it is not "content" you open
+and work through in the usual sense. A block might look like the obvious choice; two
+practical reasons ruled it out:
+
+- **Prominent placement.** The streak counter and leaderboard render inline at the top of
+  the course's main column, where every learner sees them straight away. Moodle's default
+  themes have no block region at the top of the central column, so a block could only sit
+  in a side column — far less prominent, and easy to miss.
+- **Mobile app.** Activity modules render directly in the course in the Moodle App, and
+  Solin Streaks ships app support. Blocks have limited, inconsistent visibility in the app
+  and are not shown inline with course content, so a block version would effectively
+  disappear on mobile.
+
 ## How a streak works
 
 A learner earns one **qualifying day** for each calendar day (in their own timezone) on
