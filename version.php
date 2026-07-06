@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_streak';
-$plugin->version   = 2026063000;
+$plugin->version   = 2026070600;
 $plugin->requires  = 2024100700; // Moodle 4.5.0.
 $plugin->supported = [405, 502];  // Moodle 4.5 LTS through 5.2.
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1.0';
+$plugin->maturity  = MATURITY_BETA;
+$plugin->release   = '0.9.0';
