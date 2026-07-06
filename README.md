@@ -23,7 +23,7 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 ![The Solin Streaks streak counter and per-course leaderboard shown side by side in two themes: a corporate theme (Cadence) on the left and a playful educational theme (Waddle) on the right — the same activity skinned for each audience](docs/screenshots/leaderboard-both.png)
 
-**Version:** 0.1.0 (alpha) · **Updated:** 2026-06-30 · **Maintainer:** Solin (Onno Schuit)
+**Maintainer:** Solin (Onno Schuit)
 
 ## Compatibility
 
