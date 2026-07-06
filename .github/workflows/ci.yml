@@ -12,6 +12,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-22.04
+    # Newest Moodle (5.2) is marked experimental below: its job still runs and stays
+    # visible, but an install/setup failure there does not fail the whole workflow.
+    continue-on-error: ${{ matrix.experimental || false }}
 
     services:
       postgres:
@@ -62,6 +65,7 @@ jobs:
           - php: '8.3'
             moodle-branch: 'MOODLE_502_STABLE'
             database: pgsql
+            experimental: true
 
     steps:
       - name: Check out repository code
