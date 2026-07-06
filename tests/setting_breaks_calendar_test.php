@@ -33,7 +33,6 @@ require_once($CFG->libdir . '/adminlib.php'); // For the admin_setting_configtex
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class setting_breaks_calendar_test extends \advanced_testcase {
-
     public function test_validate_accepts_valid_and_rejects_invalid(): void {
         $this->resetAfterTest();
         $setting = new setting_breaks_calendar('mod_streak/breakscalendar', 'Breaks', '', '');

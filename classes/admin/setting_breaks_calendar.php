@@ -24,7 +24,6 @@ namespace mod_streak\admin;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class setting_breaks_calendar extends \admin_setting_configtextarea {
-
     /**
      * Validate the breaks-calendar text.
      *

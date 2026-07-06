@@ -32,7 +32,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class rollover_test extends \advanced_testcase {
-
     public function test_new_day_holds_until_completion_then_flips(): void {
         global $CFG, $DB;
         require_once($CFG->libdir . '/completionlib.php');

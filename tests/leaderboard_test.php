@@ -29,7 +29,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class leaderboard_test extends \advanced_testcase {
-
     public function test_ranking_excludes_staff_and_optouts(): void {
         global $DB;
         $this->resetAfterTest();
@@ -127,8 +126,14 @@ final class leaderboard_test extends \advanced_testcase {
      * @param int $optout Opt-out flag.
      * @param int|null $display Cached displayed streak (defaults to the committed streak).
      */
-    private function set_state(int $streakid, int $userid, int $current, int $longest, int $optout,
-            ?int $display = null): void {
+    private function set_state(
+        int $streakid,
+        int $userid,
+        int $current,
+        int $longest,
+        int $optout,
+        ?int $display = null
+    ): void {
         global $DB;
         $existing = $DB->get_record('streak_state', ['streakid' => $streakid, 'userid' => $userid]);
         $record = (object) [

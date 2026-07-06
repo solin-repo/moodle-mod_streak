@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/mod/streak/backup/moodle2/backup_streak_stepslib.
  * @package    mod_streak
  */
 class backup_streak_activity_task extends backup_activity_task {
-
     /**
      * No particular settings for this activity.
      */

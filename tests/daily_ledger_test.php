@@ -27,7 +27,6 @@ use mod_streak\local\daily_ledger;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class daily_ledger_test extends \advanced_testcase {
-
     /**
      * Create a streak instance and return its id.
      *

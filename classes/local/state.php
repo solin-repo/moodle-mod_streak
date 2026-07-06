@@ -24,7 +24,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class state {
-
     /**
      * Fetch the learner's state row for a streak instance, creating a fresh
      * "not started" row (all zero, streakstart = 0) if none exists.

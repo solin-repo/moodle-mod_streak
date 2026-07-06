@@ -31,7 +31,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class breaks {
-
     /**
      * Parse a multiline breaks calendar into a sorted list of {startday, endday} (YYYYMMDD) ranges.
      *
@@ -50,17 +49,19 @@ final class breaks {
             $parts = array_map('trim', explode(',', $trimmed));
             if (count($parts) !== 2) {
                 throw new \invalid_parameter_exception(
-                    'Line ' . ($lineno + 1) . ': expected "YYYY-MM-DD, YYYY-MM-DD".');
+                    'Line ' . ($lineno + 1) . ': expected "YYYY-MM-DD, YYYY-MM-DD".'
+                );
             }
             $start = self::iso_to_ymd($parts[0], $lineno + 1);
             $end = self::iso_to_ymd($parts[1], $lineno + 1);
             if ($start > $end) {
                 throw new \invalid_parameter_exception(
-                    'Line ' . ($lineno + 1) . ': start date is after end date.');
+                    'Line ' . ($lineno + 1) . ': start date is after end date.'
+                );
             }
             $ranges[] = (object) ['startday' => $start, 'endday' => $end];
         }
-        usort($ranges, static function($a, $b) {
+        usort($ranges, static function ($a, $b) {
             return $a->startday <=> $b->startday;
         });
         return $ranges;

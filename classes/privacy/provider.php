@@ -33,10 +33,9 @@ use context_module;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider,
-        \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Describe the personal data stored by this plugin.
      *
@@ -115,8 +114,12 @@ class provider implements
             if (!$state) {
                 continue;
             }
-            $days = $DB->get_fieldset_select('streak_day', 'day',
-                'streakid = :sid AND userid = :uid', ['sid' => $streakid, 'uid' => $userid]);
+            $days = $DB->get_fieldset_select(
+                'streak_day',
+                'day',
+                'streakid = :sid AND userid = :uid',
+                ['sid' => $streakid, 'uid' => $userid]
+            );
 
             writer::with_context($context)->export_data([], (object) [
                 'currentstreak'    => $state->currentstreak,

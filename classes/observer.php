@@ -29,7 +29,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class observer {
-
     /**
      * Credit a day when a learner completes an activity (any-completion / course-progress modes).
      *

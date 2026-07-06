@@ -24,7 +24,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class qualifier {
-
     /** @var string Any completion of a (non-excluded) activity counts. */
     public const MODE_ANYCOMPLETION = 'anycompletion';
     /** @var string Only advancing course-completion progress counts. */

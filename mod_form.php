@@ -32,7 +32,6 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
  * @package    mod_streak
  */
 class mod_streak_mod_form extends moodleform_mod {
-
     /**
      * Define the form.
      */
@@ -93,8 +92,13 @@ class mod_streak_mod_form extends moodleform_mod {
 
         $courseid = (int) $this->_course->id;
         $instanceid = empty($this->_instance) ? 0 : (int) $this->_instance;
-        if ($courseid && $DB->record_exists_select('streak', 'course = :course AND id <> :id',
-                ['course' => $courseid, 'id' => $instanceid])) {
+        if (
+            $courseid && $DB->record_exists_select(
+                'streak',
+                'course = :course AND id <> :id',
+                ['course' => $courseid, 'id' => $instanceid]
+            )
+        ) {
             $errors['name'] = get_string('onlyoneinstance', 'mod_streak');
         }
 

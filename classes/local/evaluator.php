@@ -27,7 +27,6 @@ namespace mod_streak\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class evaluator {
-
     /** @var array Per-request memo of userid => DateTimeZone. */
     private static array $tzmemo = [];
 
@@ -94,11 +93,22 @@ final class evaluator {
                 break; // Still inside the open period.
             }
 
-            $met = daily_ledger::count_days_in_range($streak->id, (int) $state->userid,
-                $period->startday, $period->endday);
+            $met = daily_ledger::count_days_in_range(
+                $streak->id,
+                (int) $state->userid,
+                $period->startday,
+                $period->endday
+            );
             $nonbreak = breaks::nonbreak_days($ranges, $period->startday, $period->endday);
-            $result = engine::evaluate_period($state, $met, $nonbreak, self::goal($streak),
-                (bool) $streak->rewardbreaks, (int) $streak->freezerate, (int) $streak->freezecap);
+            $result = engine::evaluate_period(
+                $state,
+                $met,
+                $nonbreak,
+                self::goal($streak),
+                (bool) $streak->rewardbreaks,
+                (int) $streak->freezerate,
+                (int) $streak->freezecap
+            );
 
             $state->currentstreak = $result->currentstreak;
             $state->longeststreak = $result->longeststreak;
@@ -112,8 +122,12 @@ final class evaluator {
                 $state->streakstart = $next->start;
                 $anchor = $next->start;
             }
-            $state->currentperioddaysmet = daily_ledger::count_days_in_range($streak->id,
-                (int) $state->userid, $next->startday, $next->endday);
+            $state->currentperioddaysmet = daily_ledger::count_days_in_range(
+                $streak->id,
+                (int) $state->userid,
+                $next->startday,
+                $next->endday
+            );
             $changed = true;
         }
 
@@ -159,8 +173,12 @@ final class evaluator {
         }
         $tz = self::user_tz((int) $state->userid);
         $period = self::current_period($streak, $state, $tz);
-        $met = daily_ledger::count_days_in_range($streak->id, (int) $state->userid,
-            $period->startday, $period->endday);
+        $met = daily_ledger::count_days_in_range(
+            $streak->id,
+            (int) $state->userid,
+            $period->startday,
+            $period->endday
+        );
         $nonbreak = breaks::nonbreak_days(self::ranges($streak), $period->startday, $period->endday);
         $effectivegoal = min(self::goal($streak), max(0, $nonbreak));
         $state->displaystreak = self::displayed((int) $state->currentstreak, $met, $effectivegoal);

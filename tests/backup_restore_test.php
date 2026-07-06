@@ -28,7 +28,6 @@ use mod_streak\local\state;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class backup_restore_test extends \advanced_testcase {
-
     public function test_backup_restore_preserves_user_streaks(): void {
         global $DB, $USER, $CFG;
         require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
@@ -48,8 +47,14 @@ final class backup_restore_test extends \advanced_testcase {
         state::save($st);
 
         // Back up the activity, including user info.
-        $bc = new \backup_controller(\backup::TYPE_1ACTIVITY, $module->cmid, \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO, \backup::MODE_GENERAL, (int) $USER->id);
+        $bc = new \backup_controller(
+            \backup::TYPE_1ACTIVITY,
+            $module->cmid,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            (int) $USER->id
+        );
         $bc->get_plan()->get_setting('users')->set_value(true);
         $bc->execute_plan();
         $results = $bc->get_results();
@@ -62,8 +67,14 @@ final class backup_restore_test extends \advanced_testcase {
         $packer = get_file_packer('application/vnd.moodle.backup');
         $backupfile->extract_to_pathname($packer, make_backup_temp_directory($restoreid));
 
-        $rc = new \restore_controller($restoreid, $target->id, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, (int) $USER->id, \backup::TARGET_EXISTING_ADDING);
+        $rc = new \restore_controller(
+            $restoreid,
+            $target->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            (int) $USER->id,
+            \backup::TARGET_EXISTING_ADDING
+        );
         $this->assertTrue($rc->execute_precheck());
         $rc->execute_plan();
         $rc->destroy();
@@ -143,8 +154,14 @@ final class backup_restore_test extends \advanced_testcase {
     private function backup_then_restore(int $cmid, bool $withusers): \stdClass {
         global $DB, $USER;
 
-        $bc = new \backup_controller(\backup::TYPE_1ACTIVITY, $cmid, \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO, \backup::MODE_GENERAL, (int) $USER->id);
+        $bc = new \backup_controller(
+            \backup::TYPE_1ACTIVITY,
+            $cmid,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            (int) $USER->id
+        );
         $bc->get_plan()->get_setting('users')->set_value($withusers);
         $bc->execute_plan();
         $results = $bc->get_results();
@@ -156,8 +173,14 @@ final class backup_restore_test extends \advanced_testcase {
         $packer = get_file_packer('application/vnd.moodle.backup');
         $backupfile->extract_to_pathname($packer, make_backup_temp_directory($restoreid));
 
-        $rc = new \restore_controller($restoreid, $target->id, \backup::INTERACTIVE_NO,
-            \backup::MODE_GENERAL, (int) $USER->id, \backup::TARGET_EXISTING_ADDING);
+        $rc = new \restore_controller(
+            $restoreid,
+            $target->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_GENERAL,
+            (int) $USER->id,
+            \backup::TARGET_EXISTING_ADDING
+        );
         $this->assertTrue($rc->execute_precheck());
         $rc->execute_plan();
         $rc->destroy();

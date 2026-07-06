@@ -28,7 +28,6 @@
  * @package    mod_streak
  */
 class restore_streak_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * Define the restore paths.
      *

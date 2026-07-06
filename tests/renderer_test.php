@@ -28,7 +28,6 @@ use mod_streak\output\widget;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class renderer_test extends \advanced_testcase {
-
     public function test_render_widget_outputs_html(): void {
         global $DB, $PAGE;
         $this->resetAfterTest();
