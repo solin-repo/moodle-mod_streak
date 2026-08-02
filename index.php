@@ -29,10 +29,17 @@ $id = required_param('id', PARAM_INT); // Course id.
 $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_login($course);
 
+$coursecontext = context_course::instance($course->id);
+
 $PAGE->set_url('/mod/streak/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context(context_course::instance($course->id));
+$PAGE->set_context($coursecontext);
+
+// Log that the instance list was viewed.
+$event = \mod_streak\event\course_module_instance_list_viewed::create(['context' => $coursecontext]);
+$event->add_record_snapshot('course', $course);
+$event->trigger();
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('modulenameplural', 'mod_streak'));

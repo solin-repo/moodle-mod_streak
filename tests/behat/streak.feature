@@ -33,6 +33,10 @@ Feature: Solin Streaks activity
     When I follow "Show me on the leaderboard"
     Then I should see "Hide me from the leaderboard"
 
+  Scenario: The course activity index lists the Solin Streaks activities
+    When I am on the "Course 1" "streak index" page logged in as "student1"
+    Then I should see "Keep it up"
+
   Scenario: Only one Solin Streaks activity is allowed per course
     Given I log in as "teacher1"
     When I add a "streak" activity to course "Course 1" section "1"
