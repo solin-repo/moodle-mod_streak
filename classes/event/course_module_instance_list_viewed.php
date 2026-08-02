@@ -15,18 +15,23 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and metadata for mod_streak (Solin Streaks).
+ * The mod_streak instance list viewed event.
  *
  * @package    mod_streak
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace mod_streak\event;
 
-$plugin->component = 'mod_streak';
-$plugin->version   = 2026080201;
-$plugin->requires  = 2024100700; // Moodle 4.5.0.
-$plugin->supported = [405, 502];  // Moodle 4.5 LTS through 5.2.
-$plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '0.9.0';
+/**
+ * The mod_streak instance list viewed event class.
+ *
+ * Triggered by index.php, which lists every Solin Streaks activity in a course.
+ *
+ * @package    mod_streak
+ * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+}

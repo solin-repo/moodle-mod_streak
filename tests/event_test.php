@@ -121,6 +121,39 @@ final class event_test extends \advanced_testcase {
     }
 
     /**
+     * The course activity index (index.php) logs an instance list viewed event.
+     *
+     * @covers \mod_streak\event\course_module_instance_list_viewed
+     */
+    public function test_instance_list_viewed_event(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student');
+        $this->getDataGenerator()->create_module('streak', ['course' => $course->id]);
+        $coursecontext = \context_course::instance($course->id);
+
+        $this->setUser($student);
+
+        $sink = $this->redirectEvents();
+        $event = \mod_streak\event\course_module_instance_list_viewed::create(['context' => $coursecontext]);
+        $event->add_record_snapshot('course', $course);
+        $event->trigger();
+        $events = $sink->get_events();
+        $sink->close();
+
+        $this->assertCount(1, $events);
+        $triggered = reset($events);
+        $this->assertInstanceOf(\mod_streak\event\course_module_instance_list_viewed::class, $triggered);
+        $this->assertEquals($coursecontext->id, $triggered->contextid);
+        $this->assertEquals('r', $triggered->crud);
+        $this->assertEquals(
+            new \moodle_url('/mod/streak/index.php', ['id' => $course->id]),
+            $triggered->get_url()
+        );
+    }
+
+    /**
      * A learner without the view capability never reaches the inline widget, so nothing is logged.
      *
      * @covers ::streak_cm_info_view
