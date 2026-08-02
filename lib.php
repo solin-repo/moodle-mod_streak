@@ -119,6 +119,31 @@ function streak_delete_instance($id) {
 }
 
 /**
+ * Mark the activity as viewed: trigger the course module viewed event so module access is logged.
+ *
+ * Solin Streaks has no separate view page (FEATURE_NO_VIEW_LINK), so this is called from the
+ * inline course-page renderer and from the Moodle App view — the two places where a learner
+ * actually sees their streak — rather than from a view.php page load.
+ *
+ * @param stdClass $streak The streak instance record.
+ * @param stdClass|null $course The course record, when the caller already has it.
+ * @param stdClass|cm_info $cm The course module.
+ * @param context_module $context The module context.
+ */
+function streak_view($streak, $course, $cm, $context) {
+    $event = \mod_streak\event\course_module_viewed::create([
+        'context'  => $context,
+        'objectid' => $streak->id,
+    ]);
+    $event->add_record_snapshot('course_modules', $cm);
+    if ($course) {
+        $event->add_record_snapshot('course', $course);
+    }
+    $event->add_record_snapshot('streak', $streak);
+    $event->trigger();
+}
+
+/**
  * Render the per-user inline streak widget on the course page (uncached, per request).
  *
  * @param cm_info $cm The course module.
@@ -140,4 +165,7 @@ function streak_cm_info_view(cm_info $cm) {
     $html = \mod_streak\output\widget::inline($streak, (int) $USER->id, time(), $cm->id);
     $cm->set_content($html, true);
     $cm->set_custom_cmlist_item(true);
+
+    // This inline render is the activity view, so log it here (there is no view page to log from).
+    streak_view($streak, null, $cm, $context);
 }
