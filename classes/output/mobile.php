@@ -60,7 +60,9 @@ class mobile {
      * @return array Templates + data for the app.
      */
     private static function render(array $args, string $template): array {
-        global $OUTPUT, $DB, $USER;
+        global $CFG, $OUTPUT, $DB, $USER;
+
+        require_once($CFG->dirroot . '/mod/streak/lib.php');
 
         $args = (object) $args;
         $cm = get_coursemodule_from_id('streak', (int) $args->cmid, 0, false, MUST_EXIST);
@@ -69,6 +71,10 @@ class mobile {
         require_capability('mod/streak:view', $context);
 
         $streak = $DB->get_record('streak', ['id' => $cm->instance], '*', MUST_EXIST);
+
+        // Log the app view: same module access event the web course page triggers.
+        streak_view($streak, null, $cm, $context);
+
         $state = state::get_or_create($streak->id, (int) $USER->id);
         $display = evaluator::display_streak($streak, $state, time());
 

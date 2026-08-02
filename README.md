@@ -202,6 +202,12 @@ plugin stores three tables:
 A full Privacy API provider is implemented: a user's streak data can be exported and
 deleted, individually or in bulk, including the userlist (bulk) requests.
 
+Module access is logged through the standard `\mod_streak\event\course_module_viewed`
+event, so the activity shows up in Moodle's logs and activity reports like any other
+module. Because the streak renders inline on the course page rather than on a view page,
+the event is triggered when that inline content is produced for a learner (and when the
+activity is opened in the Moodle App).
+
 ## Backup and restore
 
 Course backup and restore are fully supported. The activity's configuration is included
