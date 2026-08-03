@@ -23,6 +23,7 @@
  */
 
 require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 $id = required_param('id', PARAM_INT); // Course id.
 
@@ -37,9 +38,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
 // Log that the instance list was viewed.
-$event = \mod_streak\event\course_module_instance_list_viewed::create(['context' => $coursecontext]);
-$event->add_record_snapshot('course', $course);
-$event->trigger();
+streak_index_view($course, $coursecontext);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('modulenameplural', 'mod_streak'));

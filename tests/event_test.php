@@ -121,11 +121,16 @@ final class event_test extends \advanced_testcase {
     }
 
     /**
-     * The course activity index (index.php) logs an instance list viewed event.
+     * streak_index_view() triggers the instance list viewed event.
      *
+     * index.php calls this helper; that the script calls it is covered by Behat (the activity
+     * index scenario asserts the entry lands in the course log report), because a script-level
+     * trigger cannot be driven from PHPUnit.
+     *
+     * @covers ::streak_index_view
      * @covers \mod_streak\event\course_module_instance_list_viewed
      */
-    public function test_instance_list_viewed_event(): void {
+    public function test_index_view_triggers_event(): void {
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
@@ -136,9 +141,7 @@ final class event_test extends \advanced_testcase {
         $this->setUser($student);
 
         $sink = $this->redirectEvents();
-        $event = \mod_streak\event\course_module_instance_list_viewed::create(['context' => $coursecontext]);
-        $event->add_record_snapshot('course', $course);
-        $event->trigger();
+        streak_index_view($course, $coursecontext);
         $events = $sink->get_events();
         $sink->close();
 
@@ -147,6 +150,7 @@ final class event_test extends \advanced_testcase {
         $this->assertInstanceOf(\mod_streak\event\course_module_instance_list_viewed::class, $triggered);
         $this->assertEquals($coursecontext->id, $triggered->contextid);
         $this->assertEquals('r', $triggered->crud);
+        $this->assertEquals($student->id, $triggered->userid);
         $this->assertEquals(
             new \moodle_url('/mod/streak/index.php', ['id' => $course->id]),
             $triggered->get_url()

@@ -37,6 +37,14 @@ Feature: Solin Streaks activity
     When I am on the "Course 1" "streak index" page logged in as "student1"
     Then I should see "Keep it up"
 
+  Scenario: Viewing the course activity index is logged as module access
+    Given I am on the "Course 1" "streak index" page logged in as "student1"
+    And I log out
+    When I am on the "System logs report" page logged in as "admin"
+    And I set the field "id" to "Course 1"
+    And I press "Get these logs"
+    Then I should see "Course module instance list viewed"
+
   Scenario: Only one Solin Streaks activity is allowed per course
     Given I log in as "teacher1"
     When I add a "streak" activity to course "Course 1" section "1"
