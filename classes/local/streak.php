@@ -36,7 +36,13 @@ final class streak {
     public static function for_course(int $courseid): ?\stdClass {
         global $DB;
         if (!array_key_exists($courseid, self::$coursememo)) {
-            $record = $DB->get_record('streak', ['course' => $courseid], '*', IGNORE_MULTIPLE);
+            // Ordered by id, deliberately: a course should hold only one instance, but restore can
+            // still land a second one (spec §16 keeps the incoming activity rather than losing its
+            // user data). Without an explicit order the "live" instance would be whichever the
+            // database happened to return first, so a restored duplicate could silently take over
+            // crediting from the original and stop the existing learners' streaks. Oldest wins.
+            $records = $DB->get_records('streak', ['course' => $courseid], 'id ASC', '*', 0, 1);
+            $record = reset($records);
             self::$coursememo[$courseid] = $record ?: null;
         }
         return self::$coursememo[$courseid];

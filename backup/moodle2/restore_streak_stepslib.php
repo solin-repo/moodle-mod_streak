@@ -52,11 +52,26 @@ class restore_streak_activity_structure_step extends restore_activity_structure_
      * @param array $data The instance data.
      */
     protected function process_streak($data) {
-        global $DB;
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/mod/streak/lib.php');
+
         $data = (object) $data;
         $data->course = $this->get_courseid();
+
+        // A course should hold one Solin Streaks instance. Restore keeps the incoming activity
+        // rather than silently merging its user data into the existing one (spec §16), but the
+        // admin has to know: only the oldest instance is credited, so the restored one will sit
+        // at zero until they reconcile the two.
+        $duplicate = streak_course_has_instance((int) $data->course);
+
         $newid = $DB->insert_record('streak', $data);
         $this->apply_activity_instance($newid);
+        \mod_streak\local\streak::reset_memo();
+
+        if ($duplicate) {
+            $this->log(get_string('restoreduplicatenotice', 'mod_streak'), \backup::LOG_WARNING);
+        }
     }
 
     /**
