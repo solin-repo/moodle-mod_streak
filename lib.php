@@ -66,14 +66,48 @@ function streak_is_branded(): bool {
 }
 
 /**
+ * Whether the course already holds a Solin Streaks instance.
+ *
+ * One instance per course is a hard rule, not a preference: the crediting engine resolves a
+ * course's streak with streak::for_course(), so only one instance can ever be credited. A second
+ * one would sit at zero for every learner forever. See the spec §7.
+ *
+ * @param int $courseid The course id.
+ * @param int $excludeid Instance id to ignore (when editing an existing instance).
+ * @return bool
+ */
+function streak_course_has_instance(int $courseid, int $excludeid = 0): bool {
+    global $DB;
+
+    if ($courseid <= 0) {
+        return false;
+    }
+    return $DB->record_exists_select(
+        'streak',
+        'course = :course AND id <> :id',
+        ['course' => $courseid, 'id' => $excludeid]
+    );
+}
+
+/**
  * Add a new Solin Streaks instance.
+ *
+ * Refuses to create a second instance in a course. mod_form::validation() already blocks this in
+ * the UI with a field error; this is the backstop for every other creation path (web services,
+ * CLI, generators). The restore path does not come through here — it inserts directly — and is
+ * handled separately under the spec §16 policy.
  *
  * @param stdClass $data Form data (matches the streak table columns).
  * @param mod_streak_mod_form|null $mform The form.
  * @return int The new instance id.
+ * @throws moodle_exception When the course already has a Solin Streaks instance.
  */
 function streak_add_instance($data, $mform = null) {
     global $DB;
+
+    if (streak_course_has_instance((int) $data->course)) {
+        throw new moodle_exception('onlyoneinstance', 'mod_streak');
+    }
 
     $data->timemodified = time();
     $id = $DB->insert_record('streak', $data);

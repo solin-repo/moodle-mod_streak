@@ -86,19 +86,15 @@ class mod_streak_mod_form extends moodleform_mod {
      * @return array Validation errors.
      */
     public function validation($data, $files) {
-        global $DB;
+        global $CFG;
+
+        require_once($CFG->dirroot . '/mod/streak/lib.php');
 
         $errors = parent::validation($data, $files);
 
         $courseid = (int) $this->_course->id;
         $instanceid = empty($this->_instance) ? 0 : (int) $this->_instance;
-        if (
-            $courseid && $DB->record_exists_select(
-                'streak',
-                'course = :course AND id <> :id',
-                ['course' => $courseid, 'id' => $instanceid]
-            )
-        ) {
+        if (streak_course_has_instance($courseid, $instanceid)) {
             $errors['name'] = get_string('onlyoneinstance', 'mod_streak');
         }
 
