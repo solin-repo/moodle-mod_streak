@@ -144,6 +144,22 @@ function streak_view($streak, $course, $cm, $context) {
 }
 
 /**
+ * Log that the course activity index (index.php) was viewed.
+ *
+ * Kept here rather than inline in index.php so the trigger is unit-testable: a script-level
+ * trigger cannot be exercised by PHPUnit, so core's own instance-list event tests only check
+ * the event object (see mod/h5pactivity). Behat covers index.php actually calling this.
+ *
+ * @param stdClass $course The course record.
+ * @param context_course $context The course context.
+ */
+function streak_index_view($course, $context) {
+    $event = \mod_streak\event\course_module_instance_list_viewed::create(['context' => $context]);
+    $event->add_record_snapshot('course', $course);
+    $event->trigger();
+}
+
+/**
  * Render the per-user inline streak widget on the course page (uncached, per request).
  *
  * @param cm_info $cm The course module.
