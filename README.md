@@ -25,6 +25,11 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 **Maintainer:** Solin (Onno Schuit)
 
+- **Moodle Marketplace:** <https://marketplace.moodle.com/plugins/mod_streak>
+- **Source:** <https://github.com/solin-repo/moodle-mod_streak>
+- **Why a streak, and where it backfires:**
+  <https://solin.co/gamification-in-moodle-what-works-what-backfires/>
+
 ## Compatibility
 
 The same plugin codebase supports Moodle 4.5 LTS through 5.2.
@@ -272,7 +277,12 @@ development and support services are also available from Solin: <https://solin.c
 ## Documentation
 
 This README is the primary documentation. Additional material, including the screenshots
-used here, lives in the `docs/` directory.
+used here, lives in the `docs/` directory. The plugin's listing on the Moodle Marketplace
+is at <https://marketplace.moodle.com/plugins/mod_streak>.
+
+For the reasoning behind the design, including which gamification mechanics the evidence
+supports and which ones tend to backfire, see
+[Gamification in Moodle: what works, what backfires](https://solin.co/gamification-in-moodle-what-works-what-backfires/).
 
 ## License and credits
 
