@@ -48,6 +48,9 @@ final class reminder {
         if ($status === null) {
             return false;
         }
+        if (!self::is_due_hour($streak, (int) $state->userid, $now)) {
+            return false; // Too early in the learner's day.
+        }
         $today = evaluator::today((int) $state->userid, $now);
         $fresh = state::get_or_create($streak->id, (int) $state->userid);
         if ((int) $fresh->lastreminderday === $today) {
@@ -57,6 +60,28 @@ final class reminder {
         $fresh->lastreminderday = $today;
         state::save($fresh);
         return true;
+    }
+
+    /**
+     * Whether the learner's own local clock has reached the configured reminder hour.
+     *
+     * The rollover task runs hourly, so this is what actually decides the time of day a learner is
+     * nudged. It is evaluated in the learner's timezone, not the server's, so a single site-wide
+     * hour still means "six in the evening" for everybody.
+     *
+     * @param \stdClass $streak The streak instance.
+     * @param int $userid The learner.
+     * @param int $now Reference time.
+     * @return bool
+     */
+    private static function is_due_hour(\stdClass $streak, int $userid, int $now): bool {
+        $hour = (int) ($streak->reminderhour ?? 18);
+        if ($hour < 0 || $hour > 23) {
+            $hour = 18;
+        }
+        $localhour = (int) userdate($now, '%H', \core_date::get_user_timezone(
+            \core_user::get_user($userid, '*', MUST_EXIST)));
+        return $localhour >= $hour;
     }
 
     /**

@@ -69,5 +69,17 @@ function xmldb_streak_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026061808, 'streak');
     }
 
+    if ($oldversion < 2026082900) {
+        // Which weekdays count toward the streak. Default keeps every day active, so nothing changes
+        // for an existing activity until somebody edits it.
+        $table = new xmldb_table('streak');
+        $field = new xmldb_field('activedays', XMLDB_TYPE_CHAR, '7', null, XMLDB_NOTNULL, null, '1111111', 'excludestaff');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2026082900, 'streak');
+    }
+
     return true;
 }

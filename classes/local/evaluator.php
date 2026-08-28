@@ -99,7 +99,7 @@ final class evaluator {
                 $period->startday,
                 $period->endday
             );
-            $nonbreak = breaks::nonbreak_days($ranges, $period->startday, $period->endday);
+            $nonbreak = breaks::nonbreak_days($ranges, $period->startday, $period->endday, self::mask($streak));
             $result = engine::evaluate_period(
                 $state,
                 $met,
@@ -179,7 +179,7 @@ final class evaluator {
             $period->startday,
             $period->endday
         );
-        $nonbreak = breaks::nonbreak_days(self::ranges($streak), $period->startday, $period->endday);
+        $nonbreak = breaks::nonbreak_days(self::ranges($streak), $period->startday, $period->endday, self::mask($streak));
         $effectivegoal = min(self::goal($streak), max(0, $nonbreak));
         $state->displaystreak = self::displayed((int) $state->currentstreak, $met, $effectivegoal);
     }
@@ -216,12 +216,12 @@ final class evaluator {
         $tz = self::user_tz((int) $state->userid);
         $ranges = self::ranges($streak);
         $today = cadence::day_number($now, $tz);
-        if (breaks::day_in_ranges($ranges, $today)) {
-            return null; // No reminders during an active break.
+        if (breaks::is_off_day($ranges, self::mask($streak), $today)) {
+            return null; // No reminders during a break or on a weekday that does not count.
         }
         $period = self::current_period($streak, $state, $tz);
         $met = daily_ledger::count_days_in_range($streak->id, (int) $state->userid, $period->startday, $period->endday);
-        $nonbreak = breaks::nonbreak_days($ranges, $period->startday, $period->endday);
+        $nonbreak = breaks::nonbreak_days($ranges, $period->startday, $period->endday, self::mask($streak));
         $needed = min(self::goal($streak), max(0, $nonbreak)) - $met;
         if ($needed <= 0) {
             return null; // Goal already met this period.
@@ -230,10 +230,16 @@ final class evaluator {
             return null; // Already acted today.
         }
         $remaining = cadence::days_remaining($period, $now, $tz);
-        if ($remaining !== $needed) {
-            return null; // Not the make-or-break day.
+        // The make-or-break day is the one where every day left must be used. With the early
+        // heads-up switched on, a non-daily cadence also gets one nudge the day before that, so the
+        // learner has a chance to act while there is still slack. A daily period has no day before.
+        $early = !empty($streak->earlyheadsup)
+            && $streak->cadenceperiod !== cadence::DAILY
+            && $remaining === $needed + 1;
+        if ($remaining !== $needed && !$early) {
+            return null; // Not the make-or-break day, and not the early heads-up day.
         }
-        return (object) ['needed' => $needed, 'remaining' => $remaining];
+        return (object) ['needed' => $needed, 'remaining' => $remaining, 'isearly' => $early];
     }
 
     /**
@@ -323,6 +329,17 @@ final class evaluator {
      * @param \stdClass $streak The streak instance.
      * @return array Parsed break ranges.
      */
+    /**
+     * The activedays mask for an instance, falling back to "every day counts".
+     *
+     * @param \stdClass $streak The streak instance.
+     * @return string Seven characters of 1/0, Monday first.
+     */
+    public static function mask(\stdClass $streak): string {
+        $mask = (string) ($streak->activedays ?? '');
+        return preg_match('/^[01]{7}$/', $mask) ? $mask : breaks::ALL_DAYS;
+    }
+
     public static function ranges(\stdClass $streak): array {
         $sitecal = (string) get_config('mod_streak', 'breakscalendar');
         $coursecal = (string) ($streak->breakscalendar ?? '');

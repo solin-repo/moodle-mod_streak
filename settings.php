@@ -84,6 +84,76 @@ if ($ADMIN->fulltree) {
         4
     ));
 
+    $settings->add(new admin_setting_configselect(
+        'mod_streak/qualifymode',
+        get_string('qualifymode', 'mod_streak'),
+        get_string('qualifymode_help', 'mod_streak'),
+        'anycompletion',
+        [
+            'anycompletion'  => get_string('mode:anycompletion', 'mod_streak'),
+            'courseprogress' => get_string('mode:courseprogress', 'mod_streak'),
+            'login'          => get_string('mode:login', 'mod_streak'),
+        ]
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'mod_streak/activedays',
+        get_string('activedays', 'mod_streak'),
+        get_string('settings:activedays_help', 'mod_streak'),
+        '1111111',
+        '/^[01]{7}$/',
+        7
+    ));
+
+    $settings->add(new admin_setting_configselect(
+        'mod_streak/enddatemode',
+        get_string('enddatemode', 'mod_streak'),
+        get_string('enddatemode_help', 'mod_streak'),
+        'course',
+        [
+            'course' => get_string('enddate:course', 'mod_streak'),
+            'none'   => get_string('enddate:none', 'mod_streak'),
+            'custom' => get_string('enddate:custom', 'mod_streak'),
+        ]
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'mod_streak/rewardbreaks',
+        get_string('rewardbreaks', 'mod_streak'),
+        get_string('rewardbreaks_help', 'mod_streak'),
+        0
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'mod_streak/earlyheadsup',
+        get_string('earlyheadsup', 'mod_streak'),
+        get_string('earlyheadsup_help', 'mod_streak'),
+        0
+    ));
+
+    $settings->add(new admin_setting_configcheckbox(
+        'mod_streak/excludestaff',
+        get_string('excludestaff', 'mod_streak'),
+        get_string('excludestaff_help', 'mod_streak'),
+        1
+    ));
+
+    $settings->add(new admin_setting_configtext(
+        'mod_streak/excluderoles',
+        get_string('excluderoles', 'mod_streak'),
+        get_string('excluderoles_help', 'mod_streak'),
+        '',
+        PARAM_SEQUENCE
+    ));
+
+    $settings->add(new admin_setting_configtextarea(
+        'mod_streak/modfilterexclude',
+        get_string('modfilterexclude', 'mod_streak'),
+        get_string('modfilterexclude_help', 'mod_streak'),
+        '',
+        PARAM_RAW
+    ));
+
     $settings->add(new \mod_streak\admin\setting_breaks_calendar(
         'mod_streak/breakscalendar',
         get_string('settings:breakscalendar', 'mod_streak'),

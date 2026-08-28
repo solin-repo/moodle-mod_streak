@@ -110,9 +110,51 @@ function streak_add_instance($data, $mform = null) {
     }
 
     $data->timemodified = time();
+    streak_apply_site_defaults($data);
     $id = $DB->insert_record('streak', $data);
     \mod_streak\local\streak::reset_memo();
     return $id;
+}
+
+/**
+ * Fill any unset instance field from the matching site-level default.
+ *
+ * The settings page supplies the starting value for a NEW activity. Once the activity exists its own
+ * stored value is authoritative, so this only ever fills fields the caller did not provide, and
+ * changing a site setting later never touches an activity that already exists.
+ *
+ * The final fallback is the column default from install.xml, which is what applies when a site has
+ * never visited the settings page.
+ *
+ * @param stdClass $data Instance record being created, mutated in place.
+ */
+function streak_apply_site_defaults($data) {
+    $fallbacks = [
+        'cadenceperiod'    => 'daily',
+        'cadencegoal'      => 1,
+        'qualifymode'      => 'anycompletion',
+        'modfilterexclude' => null,
+        'freezerate'       => 4,
+        'freezecap'        => 2,
+        'enddatemode'      => 'course',
+        'reminderhour'     => 18,
+        'earlyheadsup'     => 0,
+        'rewardbreaks'     => 0,
+        'excludestaff'     => 1,
+        'excluderoles'     => null,
+        'activedays'       => '1111111',
+    ];
+    foreach ($fallbacks as $name => $fallback) {
+        if (isset($data->$name) && $data->$name !== '') {
+            continue;
+        }
+        $configured = get_config('mod_streak', $name);
+        if ($configured === false || $configured === '') {
+            $data->$name = $fallback;
+            continue;
+        }
+        $data->$name = is_int($fallback) ? (int) $configured : $configured;
+    }
 }
 
 /**
