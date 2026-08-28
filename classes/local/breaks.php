@@ -99,21 +99,65 @@ final class breaks {
     }
 
     /**
-     * Count the calendar dates in [startday, endday] that are NOT inside any break.
+     * The mask meaning "every weekday counts", used whenever none is configured.
+     */
+    public const ALL_DAYS = '1111111';
+
+    /**
+     * Whether a weekday is switched on in an activedays mask.
+     *
+     * The mask is seven characters in ISO order, Monday first. Anything malformed is treated as
+     * "every day counts" so a bad value can never silently stop a streak from being earnable.
+     *
+     * @param string $mask Seven characters of 1/0, Monday first.
+     * @param int $day Day as YYYYMMDD.
+     * @return bool
+     */
+    public static function is_active_weekday(string $mask, int $day): bool {
+        if (!preg_match('/^[01]{7}$/', $mask)) {
+            return true;
+        }
+        $date = \DateTimeImmutable::createFromFormat('!Ymd', (string) $day, new \DateTimeZone('UTC'));
+        if ($date === false) {
+            return true;
+        }
+        return $mask[(int) $date->format('N') - 1] === '1';
+    }
+
+    /**
+     * Whether a day does not count: inside a break range, or on a weekday that is switched off.
+     *
+     * The two are a union. A holiday and a non-working weekday behave identically: the learner is
+     * not expected to practise, and not practising cannot cost them the streak.
+     *
+     * @param array $ranges Parsed ranges.
+     * @param string $mask Activedays mask.
+     * @param int $day Day as YYYYMMDD.
+     * @return bool
+     */
+    public static function is_off_day(array $ranges, string $mask, int $day): bool {
+        return self::day_in_ranges($ranges, $day) || !self::is_active_weekday($mask, $day);
+    }
+
+    /**
+     * Count the calendar dates in [startday, endday] that actually count.
+     *
+     * A day counts when it is outside every break range AND its weekday is switched on.
      *
      * @param array $ranges Parsed ranges.
      * @param int $startday Inclusive range start, YYYYMMDD.
      * @param int $endday Inclusive range end, YYYYMMDD.
-     * @return int Number of non-break days.
+     * @param string $mask Activedays mask; defaults to every day.
+     * @return int Number of days that count.
      */
-    public static function nonbreak_days(array $ranges, int $startday, int $endday): int {
+    public static function nonbreak_days(array $ranges, int $startday, int $endday, string $mask = self::ALL_DAYS): int {
         $count = 0;
         $utc = new \DateTimeZone('UTC');
         $cursor = \DateTimeImmutable::createFromFormat('!Ymd', (string) $startday, $utc);
         $end = \DateTimeImmutable::createFromFormat('!Ymd', (string) $endday, $utc);
         while ($cursor <= $end) {
             $day = (int) $cursor->format('Ymd');
-            if (!self::day_in_ranges($ranges, $day)) {
+            if (!self::is_off_day($ranges, $mask, $day)) {
                 $count++;
             }
             $cursor = $cursor->modify('+1 day');

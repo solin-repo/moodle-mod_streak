@@ -52,3 +52,42 @@ Feature: Solin Streaks activity
       | Name | A second streak |
     And I press "Save and return to course"
     Then I should see "Only one Solin Streaks activity is allowed per course"
+
+  @javascript
+  Scenario: A site default is offered on a new activity and can be overridden there
+    Given the following "courses" exist:
+      | fullname | shortname |
+      | Course 2 | C2        |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C2     | editingteacher |
+    And the following config values are set as admin:
+      | freezerate | 7       | mod_streak |
+      | freezecap  | 3       | mod_streak |
+      | activedays | 1111100 | mod_streak |
+    When I am on the "Course 2" course page logged in as teacher1
+    And I add a "streak" activity to course "Course 2" section "1"
+    Then the field "Freeze accrual rate" matches value "7"
+    And the field "Maximum freezes" matches value "3"
+    # Addressed by field name: the weekday boxes live in a form group, where the label is rendered
+    # beside the input rather than bound to it.
+    And the field "activeday6" matches value "0"
+    And the field "activeday1" matches value "1"
+    And I set the following fields to these values:
+      | Name                | Working week streak |
+      | Freeze accrual rate | 2                   |
+    And I press "Save and return to course"
+    And I am on the "Working week streak" "streak activity editing" page
+    Then the field "Freeze accrual rate" matches value "2"
+    And the field "activeday6" matches value "0"
+
+  @javascript
+  Scenario: Days that count survive a save and reopen
+    When I am on the "Keep it up" "streak activity editing" page logged in as teacher1
+    And I expand all fieldsets
+    And I set the field "id_activeday7" to "0"
+    And I press "Save and display"
+    And I am on the "Keep it up" "streak activity editing" page
+    And I expand all fieldsets
+    Then the field "activeday7" matches value "0"
+    And the field "activeday1" matches value "1"

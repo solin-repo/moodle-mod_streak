@@ -107,6 +107,10 @@ final class backup_restore_test extends \advanced_testcase {
             'rewardbreaks'  => 1,
             'excludestaff'  => 0,
             'reminderhour'  => 20,
+            'earlyheadsup'  => 1,
+            'activedays'    => '1111100',
+            'freezerate'    => 7,
+            'freezecap'     => 3,
         ]);
 
         $restored = $this->backup_then_restore((int) $module->cmid, true);
@@ -119,6 +123,10 @@ final class backup_restore_test extends \advanced_testcase {
         $this->assertSame(1, (int) $restored->rewardbreaks);
         $this->assertSame(0, (int) $restored->excludestaff);
         $this->assertSame(20, (int) $restored->reminderhour);
+        $this->assertSame(1, (int) $restored->earlyheadsup);
+        $this->assertSame('1111100', $restored->activedays);
+        $this->assertSame(7, (int) $restored->freezerate);
+        $this->assertSame(3, (int) $restored->freezecap);
     }
 
     public function test_restore_without_user_data_keeps_a_clean_instance(): void {

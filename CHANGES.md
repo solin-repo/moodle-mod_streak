@@ -2,6 +2,54 @@
 
 All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
+## 0.10.0 — 2026-08-28
+
+Plugin version `2026082900`.
+
+### Fixed
+
+- **The site-level settings did nothing.** Cadence period, cadence goal, freeze accrual rate,
+  maximum freezes and reminder hour were offered on the settings page but nothing read them:
+  `streak_add_instance()` inserted the submitted form data unchanged, so every activity took the
+  column defaults from `install.xml` and the settings had no effect on any activity, new or
+  existing. They are now applied when an activity is created.
+- **The reminder hour was never implemented.** `reminder::process()` had no hour gate at all, so a
+  learner was nudged on whichever hourly cron run first found their streak at risk. Reminders are
+  now held until the configured hour has arrived in the learner's own timezone.
+- **`excluderoles` was never implemented.** The column existed and was carried through backup and
+  restore, but no code read it. Named roles are now excluded from the leaderboard, alongside the
+  existing staff exclusion.
+- **`earlyheadsup` was never implemented.** It now sends one extra reminder the day before the last
+  possible day, for cadences longer than daily.
+
+### Added
+
+- **Per-activity overrides for every setting.** Freeze accrual rate, maximum freezes, reminder hour,
+  early heads-up, work-to-win during breaks, staff exclusion, excluded roles, excluded activity
+  types and the streak end date are all editable on the activity itself. A site setting supplies the
+  starting value for a new activity; the activity's own value is authoritative from then on.
+- **Days that count.** A new per-activity weekday mask decides which days a learner is expected to
+  practise. Unticking Saturday and Sunday gives a working-week streak, which is what a corporate
+  audience usually wants. A switched-off day behaves exactly like a holiday: nothing is expected and
+  missing it cannot cost the learner their streak, it reduces the period's effective goal, and
+  work-to-win still applies if that is switched on. It combines with the breaks calendar as a union.
+  Defaults to all seven days, so nothing changes for an existing activity.
+- Site-level defaults for the settings that previously had none: qualifying mode, excluded activity
+  types, end-date mode, work-to-win, early heads-up, staff exclusion, excluded roles and the
+  weekday mask.
+
+### Changed
+
+- The site-settings help text now states that a value is the starting point for a new activity, that
+  the activity can change it, and that changing the setting does not affect activities that already
+  exist.
+
+### Notes
+
+- The breaks calendar stays site-wide only, by design. The per-activity column and the union logic
+  already exist, so a per-activity calendar remains possible later without a schema change.
+- Upgrade adds one column (`activedays`, default `1111111`). No other schema change.
+
 ## 0.9.2 — 2026-08-28
 
 Plugin version `2026082800`. Documentation only, no behavior change.
