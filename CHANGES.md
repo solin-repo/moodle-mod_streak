@@ -43,6 +43,16 @@ Plugin version `2026082900`.
   leaderboard" or "activities that do not count" silently got the site value back. An explicit empty
   value is now a real choice and is respected.
 
+### Tests
+
+- Per-setting coverage of the override contract at the level of behaviour, not storage: for every
+  overridable setting the site is configured one way and the activity another, and the assertion is
+  on what the plugin does. Storage being correct is not enough, since any runtime call to
+  `get_config()` would leave the column right and the behaviour wrong.
+- A structural guard asserting that no code under `classes/` reads a site setting at runtime, with
+  the breaks calendar as the single documented exception. It names the offending file and setting
+  when it trips.
+
 ### Changed
 
 - The site-settings help text now states that a value is the starting point for a new activity, that
