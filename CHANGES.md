@@ -2,6 +2,21 @@
 
 All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
+## 0.9.2 — 2026-08-28
+
+Plugin version `2026082800`. Documentation only, no behavior change.
+
+### Changed
+
+- **Corrected the site-settings help text.** The help for the freeze accrual rate and the maximum
+  freezes both claimed "Each activity can override this default", and the breaks calendar help
+  claimed "Individual activities can add their own breaks on top of these". None of that is
+  possible: the activity form has no fields for the freeze values, the reminder hour or the breaks
+  calendar. The reminder-hour help also read as though the hour were a per-learner choice; learners
+  can only switch the reminders off altogether, in their own notification preferences. The section
+  heading is now "Site-wide streak settings" rather than "Default settings for new Solin Streaks
+  activities", which implied a per-activity override that does not exist.
+
 ## 0.9.1 — 2026-08-08
 
 Plugin version `2026080302`. Addresses both issues raised in the Moodle plugin review.
