@@ -21,6 +21,7 @@
         <FIELD NAME="reminderhour" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="18" SEQUENCE="false" COMMENT="Local hour for the daily make-or-break check."/>
         <FIELD NAME="earlyheadsup" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="breakscalendar" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Multiline YYYY-MM-DD, YYYY-MM-DD calendar."/>
+        <FIELD NAME="activedays" TYPE="char" LENGTH="7" NOTNULL="true" DEFAULT="1111111" SEQUENCE="false" COMMENT="Which weekdays count, ISO order Monday first, 1=on 0=off."/>
         <FIELD NAME="rewardbreaks" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="excludestaff" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="excluderoles" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

@@ -53,6 +53,21 @@ final class leaderboard {
             }
         }
 
+        // Roles the activity excludes from the board, on top of the staff exclusion above. Resolved
+        // in one query rather than per row, so this adds no N+1.
+        $roleswhere = '';
+        $excluderoles = array_filter(array_map('intval', explode(',', (string) ($streak->excluderoles ?? ''))));
+        if ($excluderoles) {
+            $coursecontext = $context->get_course_context();
+            [$rolein, $roleparams] = $DB->get_in_or_equal($excluderoles, SQL_PARAMS_NAMED, 'xr');
+            $contextids = $coursecontext->get_parent_context_ids(true);
+            [$ctxin, $ctxparams] = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED, 'xc');
+            $roleswhere = " AND u.id NOT IN (
+                SELECT ra.userid FROM {role_assignments} ra
+                 WHERE ra.roleid $rolein AND ra.contextid $ctxin)";
+            $params += $roleparams + $ctxparams;
+        }
+
         // Pull the user-picture fields (name, picture, imagealt, ...) in this one ranked query so the
         // leaderboard can render real avatars without a per-row user lookup (no N+1). Exclude id here
         // because it is already selected explicitly as the leading (keying) column below.
@@ -63,7 +78,7 @@ final class leaderboard {
                  JOIN ($esql) je ON je.id = u.id
                  $userfields->joins
             LEFT JOIN {streak_state} ss ON ss.streakid = :streakid AND ss.userid = u.id
-                WHERE (ss.optout IS NULL OR ss.optout = 0) $staffwhere";
+                WHERE (ss.optout IS NULL OR ss.optout = 0) $staffwhere $roleswhere";
 
         // Rank by and return the cached displayed streak (streak_state.displaystreak), the same value
         // the widget headline reads, so the board and a learner's own number always agree. The rule

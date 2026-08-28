@@ -39,7 +39,7 @@ class backup_streak_activity_structure_step extends backup_activity_structure_st
         $streak = new backup_nested_element('streak', ['id'], [
             'name', 'intro', 'introformat', 'cadenceperiod', 'cadencegoal', 'qualifymode',
             'modfilterexclude', 'freezerate', 'freezecap', 'enddatemode', 'customenddate',
-            'reminderhour', 'earlyheadsup', 'breakscalendar', 'rewardbreaks', 'excludestaff',
+            'reminderhour', 'earlyheadsup', 'breakscalendar', 'rewardbreaks', 'excludestaff', 'activedays',
             'excluderoles', 'timemodified',
         ]);
 
