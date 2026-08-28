@@ -38,6 +38,11 @@ Plugin version `2026082900`.
   types, end-date mode, work-to-win, early heads-up, staff exclusion, excluded roles and the
   weekday mask.
 
+- **A deliberately empty choice was overwritten by the site default.** `streak_apply_site_defaults()`
+  treated an empty string as "not supplied", so a teacher who cleared "roles to leave off the
+  leaderboard" or "activities that do not count" silently got the site value back. An explicit empty
+  value is now a real choice and is respected.
+
 ### Changed
 
 - The site-settings help text now states that a value is the starting point for a new activity, that

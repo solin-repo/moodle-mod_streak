@@ -145,7 +145,9 @@ function streak_apply_site_defaults($data) {
         'activedays'       => '1111111',
     ];
     foreach ($fallbacks as $name => $fallback) {
-        if (isset($data->$name) && $data->$name !== '') {
+        // Only fill what the caller did not supply. An explicitly empty value is a real choice, for
+        // example "exclude no roles", and must not be quietly replaced by the site default.
+        if (property_exists($data, $name) && $data->$name !== null) {
             continue;
         }
         $configured = get_config('mod_streak', $name);
