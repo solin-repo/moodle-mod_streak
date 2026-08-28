@@ -163,6 +163,84 @@ final class sitedefaults_test extends \advanced_testcase {
     }
 
     /**
+     * The two text settings seed a new activity too.
+     *
+     * They are kept out of the data provider because their "different" value is a string rather than
+     * a number, but they are settings like any other and must not be exempt from the contract.
+     *
+     * @covers ::streak_apply_site_defaults
+     */
+    public function test_text_settings_are_seeded(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('excluderoles', '3,5', 'mod_streak');
+        set_config('modfilterexclude', "forum\nchoice", 'mod_streak');
+
+        $course = $this->getDataGenerator()->create_course();
+        $id = streak_add_instance((object) [
+            'course' => $course->id, 'name' => 'S', 'intro' => '', 'introformat' => FORMAT_HTML,
+        ]);
+        $row = $DB->get_record('streak', ['id' => $id], '*', MUST_EXIST);
+
+        $this->assertSame('3,5', $row->excluderoles);
+        $this->assertSame("forum\nchoice", $row->modfilterexclude);
+    }
+
+    /**
+     * An explicitly empty choice is respected rather than replaced by the site default.
+     *
+     * This is the difference between a setting that can be overridden and one that only looks like
+     * it can: a teacher who clears "roles to leave off the leaderboard" means no roles, not
+     * "whatever the site says".
+     *
+     * @covers ::streak_apply_site_defaults
+     */
+    public function test_an_explicitly_empty_value_is_not_overwritten(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        set_config('excluderoles', '3,5', 'mod_streak');
+        set_config('modfilterexclude', 'forum', 'mod_streak');
+
+        $course = $this->getDataGenerator()->create_course();
+        $id = streak_add_instance((object) [
+            'course' => $course->id, 'name' => 'S', 'intro' => '', 'introformat' => FORMAT_HTML,
+            'excluderoles' => '',
+            'modfilterexclude' => '',
+        ]);
+        $row = $DB->get_record('streak', ['id' => $id], '*', MUST_EXIST);
+
+        $this->assertSame('', $row->excluderoles, 'the site default overrode a deliberate empty choice');
+        $this->assertSame('', $row->modfilterexclude, 'the site default overrode a deliberate empty choice');
+    }
+
+    /**
+     * The site-wide breaks calendar reaches the evaluator, and unions with an activity's own.
+     *
+     * breakscalendar is the one setting that always worked, but nothing proved it: no test had ever
+     * set the site-level value, only the instance column.
+     *
+     * @covers \mod_streak\local\evaluator::ranges
+     */
+    public function test_the_site_breaks_calendar_reaches_the_evaluator(): void {
+        $this->resetAfterTest();
+
+        set_config('breakscalendar', "2026-12-24, 2026-12-26", 'mod_streak');
+
+        $ranges = local\evaluator::ranges((object) ['breakscalendar' => '']);
+        $this->assertCount(1, $ranges, 'the site calendar was not read');
+        $this->assertTrue(local\breaks::day_in_ranges($ranges, 20261225));
+        $this->assertFalse(local\breaks::day_in_ranges($ranges, 20261227));
+
+        // An activity calendar adds to the site one rather than replacing it.
+        $both = local\evaluator::ranges((object) ['breakscalendar' => "2026-07-01, 2026-07-05"]);
+        $this->assertCount(2, $both, 'the two calendars were not combined');
+        $this->assertTrue(local\breaks::day_in_ranges($both, 20261225), 'site range lost');
+        $this->assertTrue(local\breaks::day_in_ranges($both, 20260703), 'activity range lost');
+    }
+
+    /**
      * The seeded freeze values genuinely drive the engine, not just the stored row.
      *
      * @covers \mod_streak\local\evaluator::apply_lifecycle
