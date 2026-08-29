@@ -52,6 +52,12 @@ Plugin version `2026082900`.
 - A structural guard asserting that no code under `classes/` reads a site setting at runtime, with
   the breaks calendar as the single documented exception. It names the offending file and setting
   when it trips.
+- Behat covers the activity form field by field: every site setting is asserted to arrive as the
+  default on a new activity, an override is asserted to survive a save and reopen, and the two
+  fields with custom conversion code (the weekday mask and the excluded-role list) get a form
+  round-trip. This is the one layer PHPUnit cannot reach: a default read from the wrong
+  configuration key would leave the seeding helper correct while the form quietly offered the
+  fallback, which is the original defect in a new place.
 
 ### Changed
 
