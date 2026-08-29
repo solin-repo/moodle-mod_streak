@@ -54,7 +54,7 @@ Feature: Solin Streaks activity
     Then I should see "Only one Solin Streaks activity is allowed per course"
 
   @javascript
-  Scenario: A site default is offered on a new activity and can be overridden there
+  Scenario: Every site setting is offered as the default on a new activity
     Given the following "courses" exist:
       | fullname | shortname |
       | Course 2 | C2        |
@@ -62,24 +62,75 @@ Feature: Solin Streaks activity
       | user     | course | role           |
       | teacher1 | C2     | editingteacher |
     And the following config values are set as admin:
-      | freezerate | 7       | mod_streak |
-      | freezecap  | 3       | mod_streak |
-      | activedays | 1111100 | mod_streak |
+      | cadenceperiod    | weekly  | mod_streak |
+      | cadencegoal      | 4       | mod_streak |
+      | qualifymode      | login   | mod_streak |
+      | modfilterexclude | forum   | mod_streak |
+      | enddatemode      | none    | mod_streak |
+      | freezerate       | 7       | mod_streak |
+      | freezecap        | 3       | mod_streak |
+      | rewardbreaks     | 1       | mod_streak |
+      | reminderhour     | 21      | mod_streak |
+      | earlyheadsup     | 1       | mod_streak |
+      | excludestaff     | 0       | mod_streak |
+      | activedays       | 1111100 | mod_streak |
     When I am on the "Course 2" course page logged in as teacher1
     And I add a "streak" activity to course "Course 2" section "1"
-    Then the field "Freeze accrual rate" matches value "7"
+    And I expand all fieldsets
+    Then the field "Streak period" matches value "Weekly"
+    And the field "Qualifying days per period" matches value "4"
+    And the field "What counts as a day" matches value "Login only"
+    And the field "Activities that do not count" matches value "forum"
+    And the field "When the streak stops" matches value "Never ends"
+    And the field "Freeze accrual rate" matches value "7"
     And the field "Maximum freezes" matches value "3"
-    # Addressed by field name: the weekday boxes live in a form group, where the label is rendered
-    # beside the input rather than bound to it.
+    And the field "Let practice during a break still count" matches value "1"
+    And the field "Reminder hour" matches value "21:00"
+    And the field "Send an early heads-up" matches value "1"
+    And the field "Leave staff off the leaderboard" matches value "0"
+    And the field "activeday5" matches value "1"
     And the field "activeday6" matches value "0"
-    And the field "activeday1" matches value "1"
+    And the field "activeday7" matches value "0"
+
+  @javascript
+  Scenario: An activity value overrides the site setting and survives a save
+    Given the following "courses" exist:
+      | fullname | shortname |
+      | Course 3 | C3        |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | teacher1 | C3     | editingteacher |
+    And the following config values are set as admin:
+      | freezerate   | 7       | mod_streak |
+      | reminderhour | 21      | mod_streak |
+      | activedays   | 1111111 | mod_streak |
+    When I am on the "Course 3" course page logged in as teacher1
+    And I add a "streak" activity to course "Course 3" section "1"
+    And I expand all fieldsets
     And I set the following fields to these values:
-      | Name                | Working week streak |
-      | Freeze accrual rate | 2                   |
+      | Name                | Overridden streak |
+      | Freeze accrual rate | 2                 |
+      | Reminder hour       | 08:00             |
+    And I set the field "id_activeday6" to "0"
+    And I set the field "id_activeday7" to "0"
     And I press "Save and return to course"
-    And I am on the "Working week streak" "streak activity editing" page
+    And I am on the "Overridden streak" "streak activity editing" page
+    And I expand all fieldsets
     Then the field "Freeze accrual rate" matches value "2"
+    And the field "Reminder hour" matches value "08:00"
     And the field "activeday6" matches value "0"
+    And the field "activeday7" matches value "0"
+    And the field "activeday1" matches value "1"
+
+  @javascript
+  Scenario: Excluded roles are stored and read back through the form
+    When I am on the "Keep it up" "streak activity editing" page logged in as teacher1
+    And I expand all fieldsets
+    And I set the field "Roles to leave off the leaderboard" to "Non-editing teacher"
+    And I press "Save and display"
+    And I am on the "Keep it up" "streak activity editing" page
+    And I expand all fieldsets
+    Then the field "Roles to leave off the leaderboard" matches value "Non-editing teacher"
 
   @javascript
   Scenario: Days that count survive a save and reopen
