@@ -4,7 +4,7 @@ All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
 ## 0.10.1 — 2026-08-30
 
-Plugin version `2026083000`.
+Plugin version `2026083001`.
 
 ### Changed
 
@@ -20,6 +20,22 @@ Plugin version `2026083000`.
 
 - The weekday checkboxes printed each day name twice ("Mon Mon Tue Tue ..."), because the label was
   passed as both the element label and the checkbox text.
+
+### Documentation
+
+- **The site settings help claimed something the plugin does not do.** The reminder-hour help said
+  "Delivery also respects quiet hours". There is no quiet-hours mechanism, in this plugin or in core
+  Moodle messaging. The same help also described the setting as the hour at which the daily check
+  runs; the check runs every hour, and the setting decides how early in the learner's own day a
+  reminder may go out. Rewritten to say what actually happens.
+- The activity-chooser description called this a "daily-practice" streak, which stopped being the
+  whole story when weekly, fortnightly and monthly periods were added.
+- Both settings screenshots were retaken: the site settings page was two releases out of date,
+  showing six settings where there are now fourteen, with help text that had since been corrected.
+- The README's site-settings table listed six of the fourteen settings; it now lists all of them.
+  The test counts were also stale (62 tests / 3 scenarios, "CI matrix planned"), and the feature
+  list did not mention the weekday mask at all.
+- US spelling throughout: "practise" and its forms became "practice".
 
 ## 0.10.0 — 2026-08-28
 
@@ -48,7 +64,7 @@ Plugin version `2026082900`.
   types and the streak end date are all editable on the activity itself. A site setting supplies the
   starting value for a new activity; the activity's own value is authoritative from then on.
 - **Days that count.** A new per-activity weekday mask decides which days a learner is expected to
-  practise. Unticking Saturday and Sunday gives a working-week streak, which is what a corporate
+  practice. Unticking Saturday and Sunday gives a working-week streak, which is what a corporate
   audience usually wants. A switched-off day behaves exactly like a holiday: nothing is expected and
   missing it cannot cost the learner their streak, it reduces the period's effective goal, and
   work-to-win still applies if that is switched on. It combines with the breaks calendar as a union.
