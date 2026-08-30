@@ -324,12 +324,6 @@ final class evaluator {
     }
 
     /**
-     * Parsed effective break ranges = union(site calendar, course calendar).
-     *
-     * @param \stdClass $streak The streak instance.
-     * @return array Parsed break ranges.
-     */
-    /**
      * The activedays mask for an instance, falling back to "every day counts".
      *
      * @param \stdClass $streak The streak instance.
@@ -340,6 +334,12 @@ final class evaluator {
         return preg_match('/^[01]{7}$/', $mask) ? $mask : breaks::ALL_DAYS;
     }
 
+    /**
+     * Parsed effective break ranges = union(site calendar, course calendar).
+     *
+     * @param \stdClass $streak The streak instance.
+     * @return array Parsed break ranges.
+     */
     public static function ranges(\stdClass $streak): array {
         $sitecal = (string) get_config('mod_streak', 'breakscalendar');
         $coursecal = (string) ($streak->breakscalendar ?? '');

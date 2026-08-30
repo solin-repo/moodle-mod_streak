@@ -77,8 +77,10 @@ final class reminderhour_test extends \advanced_testcase {
         foreach ([9, 17] as $hour) {
             $now = (new \DateTimeImmutable("today {$hour}:00", $tz))->getTimestamp();
             $state = state::get_or_create($streak->id, (int) $user->id);
-            $this->assertFalse(reminder::process($streak, $state, $now),
-                "a reminder went out at {$hour}:00, before the configured 18:00");
+            $this->assertFalse(
+                reminder::process($streak, $state, $now),
+                "a reminder went out at {$hour}:00, before the configured 18:00"
+            );
         }
         $this->assertCount(0, $sink->get_messages());
 
@@ -105,12 +107,18 @@ final class reminderhour_test extends \advanced_testcase {
         $sink = $this->redirectMessages();
 
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $this->assertFalse(reminder::process($streak, $state,
-            (new \DateTimeImmutable('today 07:00', $tz))->getTimestamp()));
+        $this->assertFalse(reminder::process(
+            $streak,
+            $state,
+            (new \DateTimeImmutable('today 07:00', $tz))->getTimestamp()
+        ));
 
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $this->assertTrue(reminder::process($streak, $state,
-            (new \DateTimeImmutable('today 08:00', $tz))->getTimestamp()));
+        $this->assertTrue(reminder::process(
+            $streak,
+            $state,
+            (new \DateTimeImmutable('today 08:00', $tz))->getTimestamp()
+        ));
 
         $sink->close();
     }
@@ -133,8 +141,10 @@ final class reminderhour_test extends \advanced_testcase {
         $sink = $this->redirectMessages();
         $now = (new \DateTimeImmutable('today 18:30', $sydney))->getTimestamp();
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $this->assertTrue(reminder::process($streak, $state, $now),
-            'the learner local hour was not used');
+        $this->assertTrue(
+            reminder::process($streak, $state, $now),
+            'the learner local hour was not used'
+        );
         $sink->close();
     }
 
@@ -174,8 +184,10 @@ final class reminderhour_test extends \advanced_testcase {
 
         $now = (new \DateTimeImmutable('today 23:00', new \DateTimeZone('UTC')))->getTimestamp();
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $this->assertNull(evaluator::reminder_status($streak, $state, $now),
-            'a reminder was raised on a day that does not count');
+        $this->assertNull(
+            evaluator::reminder_status($streak, $state, $now),
+            'a reminder was raised on a day that does not count'
+        );
     }
 
     /**
