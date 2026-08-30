@@ -32,6 +32,7 @@ final class excluderoles_test extends \advanced_testcase {
     /**
      * Build a course with three enrolled students who all have a streak.
      *
+     * @param array $streakoverrides Field values to override on the streak instance.
      * @return array{0: \stdClass, 1: \context, 2: array<string, \stdClass>}
      */
     private function make_board(array $streakoverrides = []): array {
