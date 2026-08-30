@@ -48,8 +48,10 @@ final class instanceoverride_test extends \advanced_testcase {
             set_config($name, $value, 'mod_streak');
         }
         $course = $this->getDataGenerator()->create_course();
-        $cm = $this->getDataGenerator()->create_module('streak',
-            array_merge(['course' => $course->id], $instance));
+        $cm = $this->getDataGenerator()->create_module(
+            'streak',
+            array_merge(['course' => $course->id], $instance)
+        );
         return $DB->get_record('streak', ['id' => $cm->id], '*', MUST_EXIST);
     }
 
@@ -81,7 +83,8 @@ final class instanceoverride_test extends \advanced_testcase {
         );
         // In login mode a completion must not credit a day, whatever the site says.
         $this->assertFalse(
-            qualifier::completion_qualifies($streak, (int) $streak->course, 0, COMPLETION_COMPLETE));
+            qualifier::completion_qualifies($streak, (int) $streak->course, 0, COMPLETION_COMPLETE)
+        );
     }
 
     /**
@@ -123,8 +126,11 @@ final class instanceoverride_test extends \advanced_testcase {
             ['enddatemode' => 'none'],
             ['enddatemode' => 'custom', 'customenddate' => $when]
         );
-        $this->assertSame($when, evaluator::resolved_end_date($streak),
-            'the site end-date mode overrode the activity');
+        $this->assertSame(
+            $when,
+            evaluator::resolved_end_date($streak),
+            'the site end-date mode overrode the activity'
+        );
 
         $never = $this->conflicting(['enddatemode' => 'custom'], ['enddatemode' => 'none']);
         $this->assertSame(0, evaluator::resolved_end_date($never));
@@ -146,15 +152,24 @@ final class instanceoverride_test extends \advanced_testcase {
 
         $tz = new \DateTimeZone('UTC');
         foreach (['-3 days', '-2 days', '-1 day'] as $offset) {
-            evaluator::credit($streak, (int) $user->id,
-                (new \DateTimeImmutable("{$offset} 10:00", $tz))->getTimestamp());
+            evaluator::credit(
+                $streak,
+                (int) $user->id,
+                (new \DateTimeImmutable("{$offset} 10:00", $tz))->getTimestamp()
+            );
         }
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $state = evaluator::ensure_current($streak, $state,
-            (new \DateTimeImmutable('today 10:00', $tz))->getTimestamp());
+        $state = evaluator::ensure_current(
+            $streak,
+            $state,
+            (new \DateTimeImmutable('today 10:00', $tz))->getTimestamp()
+        );
 
-        $this->assertGreaterThan(0, (int) $state->freezesavailable,
-            'no freeze accrued, so the site rate of 99 was used instead of the activity rate of 1');
+        $this->assertGreaterThan(
+            0,
+            (int) $state->freezesavailable,
+            'no freeze accrued, so the site rate of 99 was used instead of the activity rate of 1'
+        );
     }
 
     /**
@@ -172,14 +187,23 @@ final class instanceoverride_test extends \advanced_testcase {
         $user = $this->getDataGenerator()->create_user(['timezone' => 'UTC']);
 
         $tz = new \DateTimeZone('UTC');
-        evaluator::credit($streak, (int) $user->id,
-            (new \DateTimeImmutable('-1 day 10:00', $tz))->getTimestamp());
+        evaluator::credit(
+            $streak,
+            (int) $user->id,
+            (new \DateTimeImmutable('-1 day 10:00', $tz))->getTimestamp()
+        );
         $state = state::get_or_create($streak->id, (int) $user->id);
-        $state = evaluator::ensure_current($streak, $state,
-            (new \DateTimeImmutable('today 10:00', $tz))->getTimestamp());
+        $state = evaluator::ensure_current(
+            $streak,
+            $state,
+            (new \DateTimeImmutable('today 10:00', $tz))->getTimestamp()
+        );
 
-        $this->assertGreaterThan(0, (int) $state->currentstreak,
-            'practice on an off day did not count, so the site rewardbreaks=0 was used');
+        $this->assertGreaterThan(
+            0,
+            (int) $state->currentstreak,
+            'practice on an off day did not count, so the site rewardbreaks=0 was used'
+        );
     }
 
     /**
@@ -193,15 +217,23 @@ final class instanceoverride_test extends \advanced_testcase {
         $user = $this->getDataGenerator()->create_user(['timezone' => 'UTC']);
 
         $tz = new \DateTimeZone('UTC');
-        evaluator::credit($streak, (int) $user->id,
-            (new \DateTimeImmutable('yesterday 10:00', $tz))->getTimestamp());
+        evaluator::credit(
+            $streak,
+            (int) $user->id,
+            (new \DateTimeImmutable('yesterday 10:00', $tz))->getTimestamp()
+        );
 
         $sink = $this->redirectMessages();
         $state = state::get_or_create($streak->id, (int) $user->id);
         // The site hour of 0 would have sent this already; the activity says 22:00.
-        $this->assertFalse(reminder::process($streak, $state,
-            (new \DateTimeImmutable('today 12:00', $tz))->getTimestamp()),
-            'the site reminder hour was used instead of the activity hour');
+        $this->assertFalse(
+            reminder::process(
+                $streak,
+                $state,
+                (new \DateTimeImmutable('today 12:00', $tz))->getTimestamp()
+            ),
+            'the site reminder hour was used instead of the activity hour'
+        );
         $this->assertCount(0, $sink->get_messages());
         $sink->close();
     }
@@ -223,8 +255,10 @@ final class instanceoverride_test extends \advanced_testcase {
         $state = state::get_or_create($streak->id, (int) $user->id);
         $status = evaluator::reminder_status($streak, $state, time());
         if ($status !== null) {
-            $this->assertFalse((bool) $status->isearly,
-                'an early heads-up was raised although the activity switched it off');
+            $this->assertFalse(
+                (bool) $status->isearly,
+                'an early heads-up was raised although the activity switched it off'
+            );
         } else {
             $this->assertNull($status);
         }
@@ -242,8 +276,10 @@ final class instanceoverride_test extends \advanced_testcase {
         // The site would hide staff; this activity shows them.
         set_config('excludestaff', 1, 'mod_streak');
         $course = $this->getDataGenerator()->create_course();
-        $cm = $this->getDataGenerator()->create_module('streak',
-            ['course' => $course->id, 'excludestaff' => 0]);
+        $cm = $this->getDataGenerator()->create_module(
+            'streak',
+            ['course' => $course->id, 'excludestaff' => 0]
+        );
         $streak = $DB->get_record('streak', ['id' => $cm->id], '*', MUST_EXIST);
         $context = \context_module::instance($cm->cmid);
 
@@ -258,8 +294,11 @@ final class instanceoverride_test extends \advanced_testcase {
         ]);
 
         $board = leaderboard::fetch($streak, $context);
-        $this->assertSame(1, (int) $board['total'],
-            'the teacher was hidden, so the site excludestaff was used');
+        $this->assertSame(
+            1,
+            (int) $board['total'],
+            'the teacher was hidden, so the site excludestaff was used'
+        );
     }
 
     /**
@@ -276,8 +315,10 @@ final class instanceoverride_test extends \advanced_testcase {
 
         // The site excludes the role; this activity does not.
         set_config('excluderoles', (string) $roleid, 'mod_streak');
-        $cm = $this->getDataGenerator()->create_module('streak',
-            ['course' => $course->id, 'excludestaff' => 0, 'excluderoles' => '']);
+        $cm = $this->getDataGenerator()->create_module(
+            'streak',
+            ['course' => $course->id, 'excludestaff' => 0, 'excluderoles' => '']
+        );
         $streak = $DB->get_record('streak', ['id' => $cm->id], '*', MUST_EXIST);
         $context = \context_module::instance($cm->cmid);
 
@@ -294,8 +335,11 @@ final class instanceoverride_test extends \advanced_testcase {
 
         $this->assertSame('', $streak->excluderoles, 'the empty activity value was overwritten');
         $board = leaderboard::fetch($streak, $context);
-        $this->assertSame(1, (int) $board['total'],
-            'the learner was excluded, so the site excluderoles was used');
+        $this->assertSame(
+            1,
+            (int) $board['total'],
+            'the learner was excluded, so the site excluderoles was used'
+        );
     }
 
     /**
@@ -328,7 +372,10 @@ final class instanceoverride_test extends \advanced_testcase {
                 }
             }
         }
-        $this->assertSame([], $offenders,
-            "runtime code must use the instance record, not the site setting:\n" . implode("\n", $offenders));
+        $this->assertSame(
+            [],
+            $offenders,
+            "runtime code must use the instance record, not the site setting:\n" . implode("\n", $offenders)
+        );
     }
 }

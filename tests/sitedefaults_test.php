@@ -114,8 +114,11 @@ final class sitedefaults_test extends \advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
         $cm = $this->getDataGenerator()->create_module('streak', ['course' => $course->id, $field => $override]);
 
-        $this->assertEquals($override, $DB->get_field('streak', $field, ['id' => $cm->id], MUST_EXIST),
-            "the activity's own {$field} did not win over the site setting");
+        $this->assertEquals(
+            $override,
+            $DB->get_field('streak', $field, ['id' => $cm->id], MUST_EXIST),
+            "the activity's own {$field} did not win over the site setting"
+        );
     }
 
     /**
@@ -133,8 +136,11 @@ final class sitedefaults_test extends \advanced_testcase {
         $this->assertSame(7, (int) $DB->get_field('streak', 'freezerate', ['id' => $cm->id], MUST_EXIST));
 
         set_config('freezerate', 2, 'mod_streak');
-        $this->assertSame(7, (int) $DB->get_field('streak', 'freezerate', ['id' => $cm->id], MUST_EXIST),
-            'an existing activity followed a later site-setting change');
+        $this->assertSame(
+            7,
+            (int) $DB->get_field('streak', 'freezerate', ['id' => $cm->id], MUST_EXIST),
+            'an existing activity followed a later site-setting change'
+        );
     }
 
     /**

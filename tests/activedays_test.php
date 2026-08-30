@@ -31,10 +31,16 @@ use mod_streak\local\engine;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class activedays_test extends \advanced_testcase {
-    /** Monday 2026-08-24 through Sunday 2026-08-30. */
+    /** @var int Monday of the reference week, 2026-08-24. */
     private const MON = 20260824;
+
+    /** @var int Friday of the reference week, 2026-08-28. */
     private const FRI = 20260828;
+
+    /** @var int Saturday of the reference week, 2026-08-29. */
     private const SAT = 20260829;
+
+    /** @var int Sunday of the reference week, 2026-08-30. */
     private const SUN = 20260830;
 
     /**
@@ -68,8 +74,10 @@ final class activedays_test extends \advanced_testcase {
      */
     public function test_a_broken_mask_falls_back_to_every_day(): void {
         foreach (['', 'nonsense', '11111', '111111111', '1111112'] as $bad) {
-            $this->assertTrue(breaks::is_active_weekday($bad, self::SAT),
-                "mask '{$bad}' should fall back to every day counting");
+            $this->assertTrue(
+                breaks::is_active_weekday($bad, self::SAT),
+                "mask '{$bad}' should fall back to every day counting"
+            );
         }
     }
 
@@ -156,8 +164,11 @@ final class activedays_test extends \advanced_testcase {
 
         // A weekly goal of 5, but a holiday week leaves only 3 days that count. Three days is enough.
         $result = engine::evaluate_period($state, 3, 3, 5, false, 4, 2);
-        $this->assertSame(engine::OUTCOME_INCREMENT, $result->outcome,
-            'meeting every available day should satisfy the goal');
+        $this->assertSame(
+            engine::OUTCOME_INCREMENT,
+            $result->outcome,
+            'meeting every available day should satisfy the goal'
+        );
         $this->assertSame(4, $result->currentstreak);
 
         // Falling short of the reduced goal still breaks it.
@@ -192,6 +203,10 @@ final class activedays_test extends \advanced_testcase {
 
         $this->assertSame('1111100', $streak->activedays);
         $this->assertSame(5, breaks::nonbreak_days(
-            local\evaluator::ranges($streak), self::MON, self::SUN, local\evaluator::mask($streak)));
+            local\evaluator::ranges($streak),
+            self::MON,
+            self::SUN,
+            local\evaluator::mask($streak)
+        ));
     }
 }

@@ -80,7 +80,8 @@ final class reminder {
             $hour = 18;
         }
         $localhour = (int) userdate($now, '%H', \core_date::get_user_timezone(
-            \core_user::get_user($userid, '*', MUST_EXIST)));
+            \core_user::get_user($userid, '*', MUST_EXIST)
+        ));
         return $localhour >= $hour;
     }
 
