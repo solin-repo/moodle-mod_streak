@@ -40,8 +40,10 @@ final class excluderoles_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         $course = $this->getDataGenerator()->create_course();
-        $cm = $this->getDataGenerator()->create_module('streak',
-            array_merge(['course' => $course->id, 'excludestaff' => 0], $streakoverrides));
+        $cm = $this->getDataGenerator()->create_module(
+            'streak',
+            array_merge(['course' => $course->id, 'excludestaff' => 0], $streakoverrides)
+        );
         $streak = $DB->get_record('streak', ['id' => $cm->id], '*', MUST_EXIST);
         $context = \context_module::instance($cm->cmid);
 
