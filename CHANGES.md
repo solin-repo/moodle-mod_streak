@@ -2,6 +2,25 @@
 
 All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
+## 0.10.1 — 2026-08-30
+
+Plugin version `2026083000`.
+
+### Changed
+
+- **One Solin Streaks section on the activity form.** The per-activity settings were spread over six
+  headings (Solin Streaks, Days that count, Tolerance, Lifecycle, Reminders, Streak leaderboard),
+  which made only the first of them look like it belonged to the plugin: everything down to Common
+  module settings read as core Moodle. They are now a single Solin Streaks section. Streak period,
+  qualifying days per period and what counts as a day are shown; every field that has a site-level
+  default sits behind Moodle's own "Show more..." toggle, with the old headings kept as
+  sub-headings. No setting was added, removed or renamed.
+
+### Fixed
+
+- The weekday checkboxes printed each day name twice ("Mon Mon Tue Tue ..."), because the label was
+  passed as both the element label and the checkbox text.
+
 ## 0.10.0 — 2026-08-28
 
 Plugin version `2026082900`.
