@@ -147,16 +147,28 @@ at any time from the widget.
 
 **Site defaults** (*Site administration → Plugins → Activity modules → Solin Streaks*):
 
+Each of these supplies the starting value for a **new** activity. The activity's own value
+is authoritative from then on, so changing a site setting never disturbs an activity that
+already exists. The breaks calendar is the one exception: it is site-wide only.
+
 | Setting | Purpose |
 |---------|---------|
-| `cadenceperiod` | Default period (Daily / Weekly / Fortnightly / Monthly) for new activities. |
-| `cadencegoal` | Default minimum qualifying days per period. |
+| `cadenceperiod` | Period a streak is measured in: Daily, Weekly, Fortnightly or Monthly. |
+| `cadencegoal` | Minimum qualifying days per period. Ignored for Daily, which is always 1. |
+| `qualifymode` | What counts as a day: any activity completion, course progress, or login. |
+| `modfilterexclude` | Activity types that never count, one module name per line. |
+| `activedays` | Weekdays a learner is expected to practice, as a seven-character mask. |
 | `freezerate` | How often a freeze is granted (e.g. one per four successful periods). |
 | `freezecap` | Maximum freezes a learner can bank. |
-| `reminderhour` | Hour of day reminders are sent. |
-| Breaks calendar | Site-wide holiday ranges that never break a streak. |
+| `rewardbreaks` | Whether practising on a holiday or an off day still grows the streak. |
+| `enddatemode` | When streaks stop being counted: course end date, a fixed date, or never. |
+| `reminderhour` | Hour of day reminders are sent, in the learner's own timezone. |
+| `earlyheadsup` | One extra reminder the day before the last possible day, for non-daily periods. |
+| `excludestaff` | Keep anyone who can edit the course off the leaderboard. |
+| `excluderoles` | Keep named roles off the leaderboard, on top of the staff exclusion. |
+| Breaks calendar | Site-wide holiday ranges that never break a streak. Site-wide only. |
 
-![Site-wide default settings for new Solin Streaks activities: freeze accrual rate, maximum freezes, reminder hour, and the site-wide breaks calendar, each with inline help text](docs/screenshots/site-defaults.png)
+![The site settings page for Solin Streaks: every setting with its default and inline help text, from the streak period and qualifying rule through the freeze policy, reminders, leaderboard exclusions and the site-wide breaks calendar](docs/screenshots/site-defaults.png)
 
 **Per-activity settings** (on the activity's settings form) let a teacher override the
 cadence and goal, choose the qualifying action, set the end-date mode (course end /
