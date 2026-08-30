@@ -160,10 +160,12 @@ at any time from the widget.
 
 **Per-activity settings** (on the activity's settings form) let a teacher override the
 cadence and goal, choose the qualifying action, set the end-date mode (course end /
-custom / evergreen), tune the freeze policy and reward, and exclude staff or specific
-roles from the leaderboard.
+custom / evergreen), pick the weekdays that count, tune the freeze policy and reward,
+and exclude staff or specific roles from the leaderboard. They live in a single
+*Solin Streaks* section: the three questions every course has to answer are shown, and
+everything that already has a site-level default sits behind *Show more...*.
 
-![The per-activity settings form, showing the Solin Streaks section: streak period, qualifying days per period, and what counts as a qualifying day](docs/screenshots/activity-settings.png)
+![The per-activity settings form: one Solin Streaks section showing streak period, qualifying days per period and what counts as a qualifying day, with the remaining settings behind a Show more link](docs/screenshots/activity-settings.png)
 
 ## Qualifying actions
 
