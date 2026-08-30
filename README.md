@@ -51,8 +51,10 @@ plugin uses only the portable Moodle DML API. Moodle 5.1 moved the web root into
   branded flame on the course page.
 - **Configurable cadence.** Daily by default, or Weekly / Fortnightly / Monthly with a
   per-period goal ("3 of 7 days this week"), so the streak fits the course rhythm.
-- **Streak freeze.** A configurable number of forgiven misses per period (with a cap),
-  so one bad day does not wipe out weeks of effort.
+- **Streak freeze.** Learners earn one freeze for every so many successful periods, up to
+  a cap, and a freeze forgives a single missed period, so one bad day does not wipe out
+  weeks of effort. Both the accrual rate and the cap are configurable, and freezes can be
+  switched off entirely.
 - **Make-or-break reminders.** Delivered through Moodle's Message API (email, web
   notification, and mobile push where available), only when a streak is actually at
   risk, and respecting each user's notification preferences.
@@ -66,8 +68,14 @@ plugin uses only the portable Moodle DML API. Moodle 5.1 moved the web root into
 - **Qualifying action.** Choose what counts toward a day: any activity completion (the
   default), a course-progress advance, or login only. See
   [Qualifying actions](#qualifying-actions).
+- **Days that count.** A per-activity weekday mask decides which days a learner is
+  expected to practice. Untick Saturday and Sunday and the streak survives the weekend
+  untouched: a day that is switched off behaves exactly like a holiday.
 - **Institutional breaks.** A site holiday calendar so scheduled closures do not break
   anyone's streak.
+- **Site defaults, per-activity control.** Every setting except the breaks calendar has a
+  site-wide default that seeds a new activity, and can then be changed on the activity
+  itself without disturbing any other course.
 - **Themeable and mobile-ready.** Override templates, pix icons, CSS tokens, or the
   renderer without forking; the activity also renders in the Moodle App.
 
@@ -102,7 +110,11 @@ practical reasons ruled it out:
 
 A learner earns one **qualifying day** for each calendar day (in their own timezone) on
 which they perform a qualifying action. Consecutive qualifying periods build the streak;
-a missed period ends it unless a freeze is available. The number shown at the top of the
+a missed period ends it unless a freeze is available. Days the course does not expect
+anything on — a weekday switched off in *Days that count*, or a date inside the site's
+breaks calendar — are skipped rather than missed: the streak neither grows nor breaks,
+and the period's goal shrinks to match. A learner who practices anyway on such a day can
+still be credited, if the activity has that switched on. The number shown at the top of the
 widget and the number on the leaderboard are always the same value (the cached
 `displaystreak`), so what a learner sees about themselves and where they sit on the board
 never disagree.
@@ -160,13 +172,13 @@ already exists. The breaks calendar is the one exception: it is site-wide only.
 | `activedays` | Weekdays a learner is expected to practice, as a seven-character mask. |
 | `freezerate` | How often a freeze is granted (e.g. one per four successful periods). |
 | `freezecap` | Maximum freezes a learner can bank. |
-| `rewardbreaks` | Whether practising on a holiday or an off day still grows the streak. |
+| `rewardbreaks` | Whether practicing on a holiday or an off day still grows the streak. |
 | `enddatemode` | When streaks stop being counted: course end date, a fixed date, or never. |
 | `reminderhour` | Hour of day reminders are sent, in the learner's own timezone. |
 | `earlyheadsup` | One extra reminder the day before the last possible day, for non-daily periods. |
 | `excludestaff` | Keep anyone who can edit the course off the leaderboard. |
 | `excluderoles` | Keep named roles off the leaderboard, on top of the staff exclusion. |
-| Breaks calendar | Site-wide holiday ranges that never break a streak. Site-wide only. |
+| `breakscalendar` | Site-wide holiday ranges that never break a streak. Site-wide only. |
 
 ![The site settings page for Solin Streaks: every setting with its default and inline help text, from the streak period and qualifying rule through the freeze policy, reminders, leaderboard exclusions and the site-wide breaks calendar](docs/screenshots/site-defaults.png)
 
@@ -255,12 +267,13 @@ guest homepage:
 
 ## Testing
 
-The plugin ships a full automated test suite: **62 PHPUnit tests** covering the streak
-engine, cadence, evaluator, leaderboard, reminders, backup/restore, privacy, and the
-output classes, plus **3 Behat scenarios** for the inline display, leaderboard opt-out,
-and the one-activity-per-course rule. The suite passes on Moodle 4.5 LTS, where the plugin
-is actively developed; the same code targets 5.0, 5.1, and 5.2, with a CI matrix across
-all supported versions planned.
+The plugin ships a full automated test suite: **141 PHPUnit tests** covering the streak
+engine, cadence, evaluator, weekday mask, leaderboard, reminders, per-activity setting
+overrides, backup/restore, privacy, and the output classes, plus **9 Behat scenarios**
+covering the inline display, leaderboard opt-out, the one-activity-per-course rule, and
+the activity settings form field by field. The suite runs green on Moodle 4.5 LTS, 5.1
+and 5.2, and every push is checked by a GitHub Actions matrix spanning Moodle 4.5, 5.0,
+5.1 and 5.2 on PHP 8.1 to 8.3, against both PostgreSQL and MariaDB.
 
 ```bash
 php admin/tool/phpunit/cli/init.php

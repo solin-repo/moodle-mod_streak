@@ -128,7 +128,7 @@ final class breaks {
      * Whether a day does not count: inside a break range, or on a weekday that is switched off.
      *
      * The two are a union. A holiday and a non-working weekday behave identically: the learner is
-     * not expected to practise, and not practising cannot cost them the streak.
+     * not expected to practice, and not practicing cannot cost them the streak.
      *
      * @param array $ranges Parsed ranges.
      * @param string $mask Activedays mask.
