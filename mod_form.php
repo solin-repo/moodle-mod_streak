@@ -74,44 +74,53 @@ class mod_streak_mod_form extends moodleform_mod {
         $mform->setDefault('qualifymode', self::sitedefault('qualifymode', 'anycompletion'));
         $mform->addHelpButton('qualifymode', 'qualifymode', 'mod_streak');
 
-        $mform->addElement('textarea', 'modfilterexclude', get_string('modfilterexclude', 'mod_streak'),
-            ['rows' => 3, 'cols' => 40]);
+        // Everything from here on has a site-level default, so most courses never touch it.
+        // It sits behind the form's "Show more..." toggle to keep the section short.
+        $mform->addElement(
+            'textarea',
+            'modfilterexclude',
+            get_string('modfilterexclude', 'mod_streak'),
+            ['rows' => 3, 'cols' => 40]
+        );
         $mform->setType('modfilterexclude', PARAM_RAW);
         $mform->setDefault('modfilterexclude', self::sitedefault('modfilterexclude', ''));
         $mform->addHelpButton('modfilterexclude', 'modfilterexclude', 'mod_streak');
         $mform->hideIf('modfilterexclude', 'qualifymode', 'neq', 'anycompletion');
+        $mform->setAdvanced('modfilterexclude');
 
         // Which weekdays count toward the streak.
-        $mform->addElement('header', 'streakdays', get_string('activedays', 'mod_streak'));
-
         $daynames = self::day_names();
         $checkboxes = [];
         foreach ($daynames as $i => $label) {
-            $checkboxes[] = $mform->createElement('advcheckbox', 'activeday' . $i, $label, $label);
+            $checkboxes[] = $mform->createElement('advcheckbox', 'activeday' . $i, null, $label);
         }
         $mform->addGroup($checkboxes, 'activedaysgroup', get_string('activedays', 'mod_streak'), ' ', false);
         $mform->addHelpButton('activedaysgroup', 'activedays', 'mod_streak');
+        $mform->setAdvanced('activedaysgroup');
 
         // How much a learner may miss before the streak resets.
-        $mform->addElement('header', 'streaktolerance', get_string('tolerance', 'mod_streak'));
+        $this->add_subheading('streaktolerance', get_string('tolerance', 'mod_streak'));
 
         $mform->addElement('text', 'freezerate', get_string('settings:freezerate', 'mod_streak'), ['size' => 4]);
         $mform->setType('freezerate', PARAM_INT);
         $mform->setDefault('freezerate', self::sitedefault('freezerate', 4));
         $mform->addHelpButton('freezerate', 'freezerate', 'mod_streak');
+        $mform->setAdvanced('freezerate');
 
         $mform->addElement('text', 'freezecap', get_string('settings:freezecap', 'mod_streak'), ['size' => 4]);
         $mform->setType('freezecap', PARAM_INT);
         $mform->setDefault('freezecap', self::sitedefault('freezecap', 2));
         $mform->addHelpButton('freezecap', 'freezecap', 'mod_streak');
         $mform->hideIf('freezecap', 'freezerate', 'eq', 0);
+        $mform->setAdvanced('freezecap');
 
         $mform->addElement('advcheckbox', 'rewardbreaks', get_string('rewardbreaks', 'mod_streak'));
         $mform->setDefault('rewardbreaks', self::sitedefault('rewardbreaks', 0));
         $mform->addHelpButton('rewardbreaks', 'rewardbreaks', 'mod_streak');
+        $mform->setAdvanced('rewardbreaks');
 
         // When the streak stops being counted.
-        $mform->addElement('header', 'streaklifecycle', get_string('lifecycle', 'mod_streak'));
+        $this->add_subheading('streaklifecycle', get_string('lifecycle', 'mod_streak'));
 
         $endmodes = [
             'course' => get_string('enddate:course', 'mod_streak'),
@@ -121,13 +130,14 @@ class mod_streak_mod_form extends moodleform_mod {
         $mform->addElement('select', 'enddatemode', get_string('enddatemode', 'mod_streak'), $endmodes);
         $mform->setDefault('enddatemode', self::sitedefault('enddatemode', 'course'));
         $mform->addHelpButton('enddatemode', 'enddatemode', 'mod_streak');
+        $mform->setAdvanced('enddatemode');
 
-        $mform->addElement('date_selector', 'customenddate', get_string('customenddate', 'mod_streak'),
-            ['optional' => false]);
+        $mform->addElement('date_selector', 'customenddate', get_string('customenddate', 'mod_streak'), ['optional' => false]);
         $mform->hideIf('customenddate', 'enddatemode', 'neq', 'custom');
+        $mform->setAdvanced('customenddate');
 
         // When and whether the learner is nudged.
-        $mform->addElement('header', 'streakreminders', get_string('reminders', 'mod_streak'));
+        $this->add_subheading('streakreminders', get_string('reminders', 'mod_streak'));
 
         $hours = [];
         for ($h = 0; $h <= 23; $h++) {
@@ -136,18 +146,21 @@ class mod_streak_mod_form extends moodleform_mod {
         $mform->addElement('select', 'reminderhour', get_string('settings:reminderhour', 'mod_streak'), $hours);
         $mform->setDefault('reminderhour', self::sitedefault('reminderhour', 18));
         $mform->addHelpButton('reminderhour', 'reminderhour', 'mod_streak');
+        $mform->setAdvanced('reminderhour');
 
         $mform->addElement('advcheckbox', 'earlyheadsup', get_string('earlyheadsup', 'mod_streak'));
         $mform->setDefault('earlyheadsup', self::sitedefault('earlyheadsup', 0));
         $mform->addHelpButton('earlyheadsup', 'earlyheadsup', 'mod_streak');
         $mform->hideIf('earlyheadsup', 'cadenceperiod', 'eq', 'daily');
+        $mform->setAdvanced('earlyheadsup');
 
         // Who appears on the board.
-        $mform->addElement('header', 'streakboard', get_string('leaderboard', 'mod_streak'));
+        $this->add_subheading('streakboard', get_string('leaderboard', 'mod_streak'));
 
         $mform->addElement('advcheckbox', 'excludestaff', get_string('excludestaff', 'mod_streak'));
         $mform->setDefault('excludestaff', self::sitedefault('excludestaff', 1));
         $mform->addHelpButton('excludestaff', 'excludestaff', 'mod_streak');
+        $mform->setAdvanced('excludestaff');
 
         $roles = [];
         foreach (role_get_names(\context_course::instance($this->get_course()->id)) as $role) {
@@ -156,9 +169,22 @@ class mod_streak_mod_form extends moodleform_mod {
         $rolesel = $mform->addElement('select', 'excluderoles', get_string('excluderoles', 'mod_streak'), $roles);
         $rolesel->setMultiple(true);
         $mform->addHelpButton('excluderoles', 'excluderoles', 'mod_streak');
+        $mform->setAdvanced('excluderoles');
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
+    }
+
+    /**
+     * A sub-heading inside the Solin Streaks section, hidden along with the fields it introduces.
+     *
+     * @param string $name Element name.
+     * @param string $label Heading text.
+     */
+    private function add_subheading(string $name, string $label) {
+        $mform = $this->_form;
+        $mform->addElement('static', $name, '', html_writer::tag('h5', $label, ['class' => 'mb-0']));
+        $mform->setAdvanced($name);
     }
 
     /**
