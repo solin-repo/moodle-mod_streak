@@ -23,7 +23,7 @@ use mod_streak\local\engine;
  * The activedays mask: which weekdays count toward a streak.
  *
  * A switched-off weekday behaves exactly like a holiday. Nothing is expected of the learner and not
- * practising cannot cost them the streak, which is what makes a working-week streak possible without
+ * practicing cannot cost them the streak, which is what makes a working-week streak possible without
  * everyone losing it every Monday morning.
  *
  * @package    mod_streak
