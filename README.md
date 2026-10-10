@@ -268,7 +268,7 @@ guest homepage:
 
 ## Testing
 
-The plugin ships a full automated test suite: **188 PHPUnit tests** covering the streak
+The plugin ships a full automated test suite: **191 PHPUnit tests** covering the streak
 engine, cadence, evaluator, weekday mask, leaderboard, reminders, per-activity setting
 overrides, the activity settings form, the database upgrade steps, backup/restore, privacy,
 and the output classes, plus **12 Behat scenarios** covering the inline display, leaderboard

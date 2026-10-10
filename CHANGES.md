@@ -11,7 +11,7 @@ Plugin version `2026101003`.
 - **Moodle 5.3 support.** The plugin runs unchanged on Moodle 5.3; `$plugin->supported` is now
   `[405, 503]` and the CI matrix covers 5.3 on PHP 8.3 and 8.4. The CI database images moved to
   PostgreSQL 17 and MariaDB 11.4, the minimums Moodle 5.3 requires.
-- **Full test coverage.** 47 new PHPUnit tests (188 in total) and 3 new Behat scenarios (12 in
+- **Full test coverage.** 50 new PHPUnit tests (191 in total) and 3 new Behat scenarios (12 in
   total). The activity settings form, the database upgrade steps, backup and restore, the
   course-progress qualifying mode and the privacy edge cases were previously untested. Every class
   and method is now executed by a test that declares it as its coverage target.
