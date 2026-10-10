@@ -25,6 +25,13 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/streak/lib.php');
 
+#[CoversFunction('streak_supports')]
+#[CoversFunction('streak_is_branded')]
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_update_instance')]
+#[CoversFunction('streak_delete_instance')]
+#[CoversFunction('streak_cm_info_view')]
+#[CoversFunction('streak_course_has_instance')]
 /**
  * Tests for the mod_streak lib.php interface functions.
  *
@@ -39,13 +46,6 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversFunction('streak_supports')]
-#[CoversFunction('streak_is_branded')]
-#[CoversFunction('streak_add_instance')]
-#[CoversFunction('streak_update_instance')]
-#[CoversFunction('streak_delete_instance')]
-#[CoversFunction('streak_cm_info_view')]
-#[CoversFunction('streak_course_has_instance')]
 final class lib_test extends \advanced_testcase {
     /**
      * The feature flags describe an inline, no-view-link, ungraded interactive activity.

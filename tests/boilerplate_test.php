@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\boilerplate_test::class)]
 /**
  * Every source file carries the GPL boilerplate and licence markers.
  *
@@ -31,7 +32,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\boilerplate_test::class)]
 final class boilerplate_test extends \advanced_testcase {
     /**
      * Extensions Moodle expects to carry the boilerplate. Core does NOT put it on styles.css,

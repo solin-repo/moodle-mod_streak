@@ -21,6 +21,10 @@ use mod_streak\local\engine;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversFunction;
 
+#[CoversClass(\mod_streak\local\breaks::class)]
+#[CoversClass(\mod_streak\local\engine::class)]
+#[CoversClass(\mod_streak\local\evaluator::class)]
+#[CoversFunction('streak_add_instance')]
 /**
  * The activedays mask: which weekdays count toward a streak.
  *
@@ -36,10 +40,6 @@ use PHPUnit\Framework\Attributes\CoversFunction;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\breaks::class)]
-#[CoversClass(\mod_streak\local\engine::class)]
-#[CoversClass(\mod_streak\local\evaluator::class)]
-#[CoversFunction('streak_add_instance')]
 final class activedays_test extends \advanced_testcase {
     /** @var int Monday of the reference week, 2026-08-24. */
     private const MON = 20260824;

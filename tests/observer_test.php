@@ -21,6 +21,7 @@ use mod_streak\local\state;
 use mod_streak\local\streak;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\observer::class)]
 /**
  * Tests for the login event observer: it credits only login-mode streaks, and does so with a bounded
  * number of queries that does not scale with the learner's enrolment count (no per-course N+1).
@@ -30,7 +31,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\observer::class)]
 final class observer_test extends \advanced_testcase {
     /**
      * A login credits the login-mode streak in an enrolled course, and leaves a non-login streak alone.

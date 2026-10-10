@@ -21,6 +21,7 @@ use mod_streak\local\leaderboard;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\leaderboard::class)]
 /**
  * Tests for the leaderboard query (ranking, staff exclusion, opt-out).
  *
@@ -29,7 +30,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\leaderboard::class)]
 final class leaderboard_test extends \advanced_testcase {
     public function test_ranking_excludes_staff_and_optouts(): void {
         global $DB;

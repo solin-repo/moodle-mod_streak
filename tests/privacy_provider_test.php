@@ -26,6 +26,7 @@ use mod_streak\local\state;
 use mod_streak\privacy\provider;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\privacy\provider::class)]
 /**
  * Tests for the privacy provider.
  *
@@ -34,7 +35,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\privacy\provider::class)]
 final class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     public function test_export_and_delete(): void {
         global $DB;

@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\state::class)]
 /**
  * Tests for the streak_state repository.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\state::class)]
 final class state_test extends \advanced_testcase {
     /**
      * Create a streak instance and return its id.

@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\daily_ledger;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\daily_ledger::class)]
 /**
  * Tests for the credited-day ledger.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\daily_ledger::class)]
 final class daily_ledger_test extends \advanced_testcase {
     /**
      * Create a streak instance and return its id.

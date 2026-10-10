@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\breaks;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\breaks::class)]
 /**
  * Unit tests for the breaks (holiday) calendar.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\breaks::class)]
 final class breaks_test extends \advanced_testcase {
     public function test_parse_and_sort(): void {
         $text = "# Term breaks\n2026-07-06, 2026-07-10\n\n2026-05-01, 2026-05-01\n";

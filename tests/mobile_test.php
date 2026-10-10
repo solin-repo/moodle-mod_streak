@@ -20,6 +20,7 @@ use mod_streak\local\evaluator;
 use mod_streak\output\mobile;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\output\mobile::class)]
 /**
  * Tests for the Moodle App output handler.
  *
@@ -28,7 +29,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\output\mobile::class)]
 final class mobile_test extends \advanced_testcase {
     public function test_mobile_course_view_returns_widget_template(): void {
         global $DB, $PAGE;

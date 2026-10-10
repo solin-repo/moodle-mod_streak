@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\qualifier;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\qualifier::class)]
 /**
  * Unit tests for the qualifier helpers.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\qualifier::class)]
 final class qualifier_test extends \advanced_testcase {
     public function test_is_completed_state(): void {
         $this->assertTrue(qualifier::is_completed_state(COMPLETION_COMPLETE));

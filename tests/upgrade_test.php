@@ -24,6 +24,7 @@ global $CFG;
 require_once($CFG->libdir . '/upgradelib.php');
 require_once($CFG->dirroot . '/mod/streak/db/upgrade.php');
 
+#[CoversFunction('xmldb_streak_upgrade')]
 /**
  * Tests for the database upgrade steps.
  *
@@ -36,7 +37,6 @@ require_once($CFG->dirroot . '/mod/streak/db/upgrade.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversFunction('xmldb_streak_upgrade')]
 final class upgrade_test extends \advanced_testcase {
     /**
      * Insert a learner state row directly, as the old schema would have held it.

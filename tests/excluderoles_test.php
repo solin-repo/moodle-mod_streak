@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\leaderboard;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\leaderboard::class)]
 /**
  * Keeping named roles off the leaderboard.
  *
@@ -30,7 +31,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\leaderboard::class)]
 final class excluderoles_test extends \advanced_testcase {
     /**
      * Build a course with three enrolled students who all have a streak.

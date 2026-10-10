@@ -24,6 +24,7 @@ global $CFG;
 require_once($CFG->dirroot . '/course/modlib.php');
 require_once($CFG->dirroot . '/mod/streak/mod_form.php');
 
+#[CoversClass(\mod_streak_mod_form::class)]
 /**
  * Tests for the activity settings form: defaults, the weekday mask, excluded roles and validation.
  *
@@ -35,7 +36,6 @@ require_once($CFG->dirroot . '/mod/streak/mod_form.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak_mod_form::class)]
 final class mod_form_test extends \advanced_testcase {
     /**
      * The "add activity" form for a course.

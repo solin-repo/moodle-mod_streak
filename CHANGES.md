@@ -4,7 +4,7 @@ All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
 ## 0.11.0 — 2026-10-10
 
-Plugin version `2026101001`.
+Plugin version `2026101002`.
 
 ### Added
 

@@ -25,6 +25,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/streak/lib.php');
 
+#[CoversFunction('streak_view')]
+#[CoversClass(\mod_streak\event\course_module_viewed::class)]
+#[CoversFunction('streak_cm_info_view')]
+#[CoversClass(\mod_streak\output\mobile::class)]
+#[CoversFunction('streak_index_view')]
+#[CoversClass(\mod_streak\event\course_module_instance_list_viewed::class)]
 /**
  * Tests for the mod_streak course module viewed event.
  *
@@ -38,12 +44,6 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversFunction('streak_view')]
-#[CoversClass(\mod_streak\event\course_module_viewed::class)]
-#[CoversFunction('streak_cm_info_view')]
-#[CoversClass(\mod_streak\output\mobile::class)]
-#[CoversFunction('streak_index_view')]
-#[CoversClass(\mod_streak\event\course_module_instance_list_viewed::class)]
 final class event_test extends \advanced_testcase {
     /**
      * streak_view() triggers a well-formed course module viewed event.

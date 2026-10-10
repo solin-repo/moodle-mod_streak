@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\engine;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\engine::class)]
 /**
  * Unit tests for the streak period-evaluation engine.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\engine::class)]
 final class engine_test extends \advanced_testcase {
     /**
      * Build a state snapshot.

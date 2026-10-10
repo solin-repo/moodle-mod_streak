@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\cadence;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\cadence::class)]
 /**
  * Unit tests for the cadence (period) engine.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\cadence::class)]
 final class cadence_test extends \advanced_testcase {
     /** @var \DateTimeZone Amsterdam timezone used across the cases. */
     private \DateTimeZone $ams;

@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\milestone;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\milestone::class)]
 /**
  * Tests for course-anchored streak progress and the weekly fallback.
  *
@@ -27,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\milestone::class)]
 final class milestone_test extends \advanced_testcase {
     public function test_course_progress_fills_toward_the_goal(): void {
         // A 60-day course, 39-day streak: the ring is 39/60, not a band fraction.

@@ -20,6 +20,7 @@ use mod_streak\local\evaluator;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\evaluator::class)]
 /**
  * Integration tests for the streak evaluator (crediting + roll-over + display).
  *
@@ -28,7 +29,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\evaluator::class)]
 final class evaluator_test extends \advanced_testcase {
     /** @var int A UTC user's id, for predictable day boundaries. */
     private int $userid;

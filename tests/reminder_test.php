@@ -21,6 +21,7 @@ use mod_streak\local\reminder;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\reminder::class)]
 /**
  * Tests for the make-or-break reminder.
  *
@@ -29,7 +30,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\reminder::class)]
 final class reminder_test extends \advanced_testcase {
     public function test_is_make_or_break_rule(): void {
         $this->assertTrue(reminder::is_make_or_break(2, 2));   // Every remaining day now required.

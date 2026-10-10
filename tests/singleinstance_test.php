@@ -25,6 +25,11 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/streak/lib.php');
 
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_course_has_instance')]
+#[CoversFunction('streak_update_instance')]
+#[CoversClass(\mod_streak\local\streak::class)]
+#[CoversClass(\restore_streak_activity_structure_step::class)]
 /**
  * One Solin Streaks instance per course.
  *
@@ -43,11 +48,6 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversFunction('streak_add_instance')]
-#[CoversFunction('streak_course_has_instance')]
-#[CoversFunction('streak_update_instance')]
-#[CoversClass(\mod_streak\local\streak::class)]
-#[CoversClass(\restore_streak_activity_structure_step::class)]
 final class singleinstance_test extends \advanced_testcase {
     /**
      * The first instance in a course is created normally.

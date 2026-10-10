@@ -23,6 +23,10 @@ use mod_streak\local\reminder;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\local\evaluator::class)]
+#[CoversClass(\mod_streak\local\qualifier::class)]
+#[CoversClass(\mod_streak\local\reminder::class)]
+#[CoversClass(\mod_streak\local\leaderboard::class)]
 /**
  * An activity's own value beats the site setting, in behaviour and not merely in storage.
  *
@@ -39,10 +43,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\local\evaluator::class)]
-#[CoversClass(\mod_streak\local\qualifier::class)]
-#[CoversClass(\mod_streak\local\reminder::class)]
-#[CoversClass(\mod_streak\local\leaderboard::class)]
 final class instanceoverride_test extends \advanced_testcase {
     /**
      * Create an activity whose fields deliberately disagree with the site settings.

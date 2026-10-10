@@ -20,6 +20,10 @@ use mod_streak\local\daily_ledger;
 use mod_streak\local\state;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\backup_streak_activity_task::class)]
+#[CoversClass(\backup_streak_activity_structure_step::class)]
+#[CoversClass(\restore_streak_activity_task::class)]
+#[CoversClass(\restore_streak_activity_structure_step::class)]
 /**
  * Backup/restore preserves streaks and the leaderboard (the §16 guarantee).
  *
@@ -31,10 +35,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\backup_streak_activity_task::class)]
-#[CoversClass(\backup_streak_activity_structure_step::class)]
-#[CoversClass(\restore_streak_activity_task::class)]
-#[CoversClass(\restore_streak_activity_structure_step::class)]
 final class backup_restore_test extends \advanced_testcase {
     public function test_backup_restore_preserves_user_streaks(): void {
         global $DB, $USER, $CFG;

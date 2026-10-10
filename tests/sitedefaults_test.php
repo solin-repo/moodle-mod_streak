@@ -25,6 +25,9 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/streak/lib.php');
 
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_apply_site_defaults')]
+#[CoversClass(\mod_streak\local\evaluator::class)]
 /**
  * Site-level defaults, and per-activity overrides of them.
  *
@@ -40,9 +43,6 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversFunction('streak_add_instance')]
-#[CoversFunction('streak_apply_site_defaults')]
-#[CoversClass(\mod_streak\local\evaluator::class)]
 final class sitedefaults_test extends \advanced_testcase {
     /**
      * Every configurable field, with a site value that differs from the install.xml default.

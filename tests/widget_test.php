@@ -20,6 +20,7 @@ use mod_streak\local\evaluator;
 use mod_streak\output\widget;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(\mod_streak\output\widget::class)]
 /**
  * Tests for the inline widget renderable.
  *
@@ -28,7 +29,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[CoversClass(\mod_streak\output\widget::class)]
 final class widget_test extends \advanced_testcase {
     public function test_rank_in_returns_board_position(): void {
         // Ordered board page keyed by user id, as leaderboard::fetch returns it.
