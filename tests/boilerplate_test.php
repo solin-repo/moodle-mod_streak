@@ -16,6 +16,8 @@
 
 namespace mod_streak;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+
 /**
  * Every source file carries the GPL boilerplate and licence markers.
  *
@@ -25,9 +27,11 @@ namespace mod_streak;
  * This test is the regression guard those tools cannot provide.
  *
  * @package    mod_streak
+ * @covers     \mod_streak\boilerplate_test
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\boilerplate_test::class)]
 final class boilerplate_test extends \advanced_testcase {
     /**
      * Extensions Moodle expects to carry the boilerplate. Core does NOT put it on styles.css,
@@ -67,8 +71,6 @@ final class boilerplate_test extends \advanced_testcase {
 
     /**
      * The sweep must actually be looking at files, or the assertions below pass vacuously.
-     *
-     * @covers \mod_streak\boilerplate_test
      */
     public function test_the_sweep_finds_the_expected_files(): void {
         $files = $this->source_files();
@@ -83,8 +85,6 @@ final class boilerplate_test extends \advanced_testcase {
 
     /**
      * Every source file opens with the GPL boilerplate block.
-     *
-     * @covers \mod_streak\boilerplate_test
      */
     public function test_every_source_file_has_the_gpl_boilerplate(): void {
         global $CFG;
@@ -102,8 +102,6 @@ final class boilerplate_test extends \advanced_testcase {
 
     /**
      * Every source file declares its copyright and licence tags explicitly.
-     *
-     * @covers \mod_streak\boilerplate_test
      */
     public function test_every_source_file_declares_copyright_and_licence(): void {
         global $CFG;

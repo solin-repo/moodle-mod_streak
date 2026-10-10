@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\evaluator;
 use mod_streak\local\leaderboard;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Day roll-over behavior: the displayed streak holds across midnight and only advances
@@ -31,6 +32,9 @@ use mod_streak\local\state;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\observer::class)]
+#[CoversClass(\mod_streak\local\evaluator::class)]
+#[CoversClass(\mod_streak\task\rollover_task::class)]
 final class rollover_test extends \advanced_testcase {
     public function test_new_day_holds_until_completion_then_flips(): void {
         global $CFG, $DB;
@@ -116,5 +120,9 @@ final class rollover_test extends \advanced_testcase {
 
         $state = state::get_or_create($streak->id, (int) $student->id);
         $this->assertSame(1, (int) $state->frozenfinal);
+    }
+
+    public function test_scheduled_task_has_a_name(): void {
+        $this->assertSame(get_string('task:rollover', 'mod_streak'), (new \mod_streak\task\rollover_task())->get_name());
     }
 }

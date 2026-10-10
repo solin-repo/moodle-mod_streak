@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use mod_streak\local\evaluator;
 use mod_streak\output\widget;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the inline widget renderable.
@@ -27,6 +28,7 @@ use mod_streak\output\widget;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\output\widget::class)]
 final class widget_test extends \advanced_testcase {
     public function test_rank_in_returns_board_position(): void {
         // Ordered board page keyed by user id, as leaderboard::fetch returns it.
@@ -104,5 +106,138 @@ final class widget_test extends \advanced_testcase {
 
         // No raw HTML leaked into the context: avatar values are arrays, not strings.
         $this->assertIsNotString($data['myavatar']);
+    }
+
+    /**
+     * Create a streak activity in a course and return its record and cmid.
+     *
+     * @param \stdClass $course The course.
+     * @param array $settings Instance settings.
+     * @return array{0: \stdClass, 1: int} The streak record and the cmid.
+     */
+    private function make_streak(\stdClass $course, array $settings): array {
+        global $DB;
+        /** @var \mod_streak_generator $gen */
+        $gen = $this->getDataGenerator()->get_plugin_generator('mod_streak');
+        $created = $gen->create_instance(['course' => $course->id] + $settings);
+        return [$DB->get_record('streak', ['id' => $created->id], '*', MUST_EXIST), (int) $created->cmid];
+    }
+
+    public function test_inline_renders_through_the_plugin_renderer(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        [$streak, $cmid] = $this->make_streak($course, ['excludestaff' => 0]);
+        $now = gmmktime(12, 0, 0, 6, 15, 2026);
+        evaluator::credit($streak, (int) $student->id, $now);
+        $PAGE->set_url('/');
+
+        $html = widget::inline($streak, (int) $student->id, $now, $cmid);
+
+        $this->assertStringContainsString('streak', $html);
+        $this->assertStringContainsString(get_string('unitdays', 'mod_streak', 1), $html);
+        $this->assertStringContainsString(fullname($student), $html);
+    }
+
+    public function test_a_course_with_an_end_date_shows_progress_toward_the_course_length(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $start = gmmktime(0, 0, 0, 6, 1, 2026);
+        $course = $this->getDataGenerator()->create_course([
+            'startdate' => $start,
+            'enddate'   => $start + 28 * DAYSECS,
+        ]);
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        [$streak, $cmid] = $this->make_streak($course, ['enddatemode' => 'course']);
+        $now = gmmktime(12, 0, 0, 6, 15, 2026);
+        evaluator::credit($streak, (int) $student->id, $now);
+        $PAGE->set_url('/');
+
+        $data = (new widget($streak, (int) $student->id, $now, $cmid))->export_for_template($PAGE->get_renderer('mod_streak'));
+
+        // A 28-day course: one day of 28, with a marker at every week (7, 14 and 21 days in).
+        $this->assertSame('course', $data['milestonemode']);
+        $this->assertSame(4, $data['milestonepercent']);
+        $caption = get_string('milestonecourse', 'mod_streak', (object) ['value' => 1, 'goal' => 28]);
+        $this->assertSame($caption, $data['milestonecaption']);
+        $this->assertSame([['angle' => 90.0], ['angle' => 180.0], ['angle' => 270.0]], $data['milestonemarkers']);
+        // Daily cadence has no per-period progress line.
+        $this->assertSame('', $data['progress']);
+    }
+
+    public function test_a_non_daily_cadence_shows_progress_in_the_open_period(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        [$streak, $cmid] = $this->make_streak($course, ['cadenceperiod' => 'weekly', 'cadencegoal' => 3]);
+        $now = gmmktime(12, 0, 0, 6, 15, 2026);
+        evaluator::credit($streak, (int) $student->id, $now);
+        $PAGE->set_url('/');
+
+        $data = (new widget($streak, (int) $student->id, $now, $cmid))->export_for_template($PAGE->get_renderer('mod_streak'));
+
+        $this->assertSame(get_string('progressthisperiod', 'mod_streak', (object) ['met' => 1, 'goal' => 3]), $data['progress']);
+        $this->assertSame(get_string('unitweeks', 'mod_streak', 0), $data['unit']);
+    }
+
+    public function test_the_unit_label_follows_the_cadence(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $PAGE->set_url('/');
+        $expected = [
+            'daily'       => 'unitdays',
+            'weekly'      => 'unitweeks',
+            'fortnightly' => 'unitfortnights',
+            'monthly'     => 'unitmonths',
+        ];
+        foreach ($expected as $period => $stringid) {
+            $course = $this->getDataGenerator()->create_course();
+            $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+            [$streak, $cmid] = $this->make_streak($course, ['cadenceperiod' => $period, 'cadencegoal' => 1]);
+
+            $widget = new widget($streak, (int) $student->id, time(), $cmid);
+            $data = $widget->export_for_template($PAGE->get_renderer('mod_streak'));
+
+            $this->assertSame(get_string($stringid, 'mod_streak', 0), $data['unit'], $period);
+        }
+    }
+
+    public function test_a_long_board_is_truncated_with_a_note(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $students = [];
+        for ($i = 0; $i < 51; $i++) {
+            $students[] = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        }
+        [$streak, $cmid] = $this->make_streak($course, []);
+        $PAGE->set_url('/');
+
+        $viewer = end($students);
+        $data = (new widget($streak, (int) $viewer->id, time(), $cmid))->export_for_template($PAGE->get_renderer('mod_streak'));
+
+        $this->assertTrue($data['hasboard']);
+        $this->assertCount(50, $data['rows']);
+        $this->assertTrue($data['hasmore']);
+        $this->assertSame(get_string('boardtruncated', 'mod_streak', (object) ['shown' => 50, 'total' => 51]), $data['boardnote']);
+    }
+
+    public function test_no_board_without_the_leaderboard_capability(): void {
+        global $DB, $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        [$streak, $cmid] = $this->make_streak($course, []);
+        $studentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
+        assign_capability('mod/streak:viewleaderboard', CAP_PROHIBIT, $studentrole, \context_module::instance($cmid));
+        $PAGE->set_url('/');
+
+        $data = (new widget($streak, (int) $student->id, time(), $cmid))->export_for_template($PAGE->get_renderer('mod_streak'));
+
+        $this->assertFalse($data['hasboard']);
+        $this->assertSame([], $data['rows']);
+        $this->assertFalse($data['hasmyrank']);
     }
 }

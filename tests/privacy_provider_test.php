@@ -16,14 +16,15 @@
 
 namespace mod_streak;
 
-use mod_streak\local\daily_ledger;
-use mod_streak\local\state;
-use mod_streak\privacy\provider;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
+use mod_streak\local\daily_ledger;
+use mod_streak\local\state;
+use mod_streak\privacy\provider;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the privacy provider.
@@ -33,6 +34,7 @@ use core_privacy\local\request\writer;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\privacy\provider::class)]
 final class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     public function test_export_and_delete(): void {
         global $DB;
@@ -105,6 +107,60 @@ final class privacy_provider_test extends \core_privacy\tests\provider_testcase 
         provider::delete_data_for_all_users_in_context($context);
         $this->assertSame(0, $DB->count_records('streak_state', ['streakid' => $module->id]));
         $this->assertSame(0, $DB->count_records('streak_day', ['streakid' => $module->id]));
+    }
+
+    /**
+     * Contexts that hold no Solin Streaks data are skipped by every request, without touching the
+     * streak data that does exist: a course context, and the module context of another activity type.
+     */
+    public function test_foreign_contexts_are_ignored(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $module = $this->getDataGenerator()->create_module('streak', ['course' => $course->id]);
+        $page = $this->getDataGenerator()->create_module('page', ['course' => $course->id]);
+        $coursecontext = \context_course::instance($course->id);
+        $pagecontext = \context_module::instance($page->cmid);
+        $user = $this->getDataGenerator()->create_user();
+        $this->seed_streak_data((int) $module->id, (int) $user->id);
+
+        // A module context of another activity resolves to no streak instance.
+        $userlist = new userlist($pagecontext, 'mod_streak');
+        provider::get_users_in_context($userlist);
+        $this->assertEmpty($userlist->get_userids());
+
+        // Export over both foreign contexts writes nothing.
+        $approved = new approved_contextlist($user, 'mod_streak', [$coursecontext->id, $pagecontext->id]);
+        provider::export_user_data($approved);
+        $this->assertFalse(writer::with_context($coursecontext)->has_any_data());
+        $this->assertFalse(writer::with_context($pagecontext)->has_any_data());
+
+        // None of the deletes reach the streak rows through a foreign context.
+        provider::delete_data_for_user($approved);
+        provider::delete_data_for_all_users_in_context($coursecontext);
+        provider::delete_data_for_all_users_in_context($pagecontext);
+        provider::delete_data_for_users(new approved_userlist($coursecontext, 'mod_streak', [(int) $user->id]));
+        provider::delete_data_for_users(new approved_userlist($pagecontext, 'mod_streak', [(int) $user->id]));
+        $this->assertSame(1, $DB->count_records('streak_state', ['streakid' => $module->id, 'userid' => $user->id]));
+        $this->assertSame(1, $DB->count_records('streak_day', ['streakid' => $module->id, 'userid' => $user->id]));
+    }
+
+    /**
+     * A user without a streak in an approved context gets no export for it.
+     */
+    public function test_export_skips_a_context_without_state_for_the_user(): void {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $module = $this->getDataGenerator()->create_module('streak', ['course' => $course->id]);
+        $context = \context_module::instance($module->cmid);
+        $other = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $this->seed_streak_data((int) $module->id, (int) $other->id);
+
+        provider::export_user_data(new approved_contextlist($user, 'mod_streak', [$context->id]));
+        $this->assertFalse(writer::with_context($context)->has_any_data());
     }
 
     /**

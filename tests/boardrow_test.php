@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\boardrow;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the leaderboard-row presentation helpers (medal name + avatar data).
@@ -26,6 +27,7 @@ use mod_streak\local\boardrow;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\boardrow::class)]
 final class boardrow_test extends \advanced_testcase {
     public function test_medal_name_for_top_three_only(): void {
         $this->assertSame('gold', boardrow::medal_name(1));

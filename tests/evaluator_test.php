@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use mod_streak\local\evaluator;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Integration tests for the streak evaluator (crediting + roll-over + display).
@@ -27,6 +28,7 @@ use mod_streak\local\state;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\evaluator::class)]
 final class evaluator_test extends \advanced_testcase {
     /** @var int A UTC user's id, for predictable day boundaries. */
     private int $userid;
@@ -159,5 +161,111 @@ final class evaluator_test extends \advanced_testcase {
         $this->assertSame(6, evaluator::displayed(5, 3, 3));
         // A zero effective goal (e.g. a fully-break period) never adds the open period.
         $this->assertSame(5, evaluator::displayed(5, 4, 0));
+    }
+
+    public function test_nothing_happens_before_the_first_qualifying_action(): void {
+        $s = $this->make_streak('daily');
+        $state = $this->reload($s->id);
+        $now = $this->ts('2026-06-10 12:00');
+
+        $this->assertSame(0, evaluator::display_streak($s, $state, $now));
+        $this->assertSame($state, evaluator::ensure_current($s, $state, $now));
+        $this->assertNull(evaluator::reminder_status($s, $state, $now));
+        $this->assertSame($state, evaluator::apply_lifecycle($s, $state, $now, 0));
+    }
+
+    public function test_a_frozen_streak_takes_no_more_credit(): void {
+        global $DB;
+        $s = $this->make_streak('daily');
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-01 10:00'));
+        $state = $this->reload($s->id);
+        $state->frozenfinal = 1;
+        state::save($state);
+
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-02 10:00'));
+
+        $this->assertFalse($DB->record_exists('streak_day', ['streakid' => $s->id, 'day' => 20260602]));
+        $state = $this->reload($s->id);
+        $this->assertSame(20260601, (int) $state->lastqualifyingday);
+        // Nor does it roll over any more periods.
+        $this->assertSame($state, evaluator::ensure_current($s, $state, $this->ts('2026-06-09 10:00')));
+    }
+
+    public function test_lifecycle_resolves_the_end_date_itself_when_not_given(): void {
+        global $DB;
+        $s = $this->make_streak('daily');
+        $DB->update_record('streak', (object) [
+            'id' => $s->id,
+            'enddatemode' => 'custom',
+            'customenddate' => $this->ts('2026-06-03 00:00'),
+        ]);
+        $s = $DB->get_record('streak', ['id' => $s->id], '*', MUST_EXIST);
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-01 10:00'));
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-02 10:00'));
+
+        $state = evaluator::apply_lifecycle($s, $this->reload($s->id), $this->ts('2026-06-05 10:00'));
+
+        $this->assertSame(1, (int) $state->frozenfinal);
+        $this->assertSame(1, (int) $this->reload($s->id)->frozenfinal);
+    }
+
+    public function test_reminder_is_not_due_once_the_goal_is_met(): void {
+        $s = $this->make_streak('weekly', 2);
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-15 10:00'));
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-16 10:00'));
+
+        $this->assertNull(evaluator::reminder_status($s, $this->reload($s->id), $this->ts('2026-06-20 19:00')));
+    }
+
+    public function test_reminder_is_not_due_after_acting_today(): void {
+        $s = $this->make_streak('weekly', 7);
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-15 10:00'));
+
+        // Every day of the week is needed, so Monday is make-or-break, but the learner already acted.
+        $this->assertNull(evaluator::reminder_status($s, $this->reload($s->id), $this->ts('2026-06-15 19:00')));
+    }
+
+    public function test_reminder_is_not_due_while_there_is_slack(): void {
+        $s = $this->make_streak('weekly', 1);
+        evaluator::credit($s, $this->userid, $this->ts('2026-06-15 10:00'));
+
+        // Monday of the next week: one day needed, seven left.
+        $this->assertNull(evaluator::reminder_status($s, $this->reload($s->id), $this->ts('2026-06-22 19:00')));
+        // Sunday of that week: the last chance.
+        $status = evaluator::reminder_status($s, $this->reload($s->id), $this->ts('2026-06-28 19:00'));
+        $this->assertSame(1, $status->needed);
+        $this->assertSame(1, $status->remaining);
+        $this->assertFalse($status->isearly);
+    }
+
+    public function test_today_is_the_learners_local_day(): void {
+        $tokyo = (int) $this->getDataGenerator()->create_user(['timezone' => 'Asia/Tokyo'])->id;
+        $at = $this->ts('2026-06-15 20:00');
+
+        $this->assertSame(20260615, evaluator::today($this->userid, $at));
+        $this->assertSame(20260616, evaluator::today($tokyo, $at));
+    }
+
+    public function test_a_broken_breaks_calendar_counts_as_no_breaks(): void {
+        $s = $this->make_streak('daily');
+        set_config('breakscalendar', "2026-06-01, 2026-06-07\nnot a date", 'mod_streak');
+
+        $this->assertSame([], evaluator::ranges($s));
+
+        set_config('breakscalendar', '2026-06-01, 2026-06-07', 'mod_streak');
+        $this->assertCount(1, evaluator::ranges($s));
+    }
+
+    public function test_the_display_of_an_unstarted_state_is_zero(): void {
+        // The public paths only reach recompute_display() for a started streak; its guard for
+        // an unstarted state is exercised directly so a future caller cannot inherit a stale value.
+        $s = $this->make_streak('daily');
+        $state = $this->reload($s->id);
+        $state->displaystreak = 5;
+
+        $method = new \ReflectionMethod(evaluator::class, 'recompute_display');
+        $method->invoke(null, $s, $state);
+
+        $this->assertSame(0, $state->displaystreak);
     }
 }

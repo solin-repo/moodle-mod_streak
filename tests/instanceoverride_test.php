@@ -21,6 +21,7 @@ use mod_streak\local\leaderboard;
 use mod_streak\local\qualifier;
 use mod_streak\local\reminder;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * An activity's own value beats the site setting, in behaviour and not merely in storage.
@@ -31,9 +32,17 @@ use mod_streak\local\state;
  * value, the activity to a different one, and asserts what the plugin actually DOES.
  *
  * @package    mod_streak
+ * @covers     \mod_streak\local\evaluator
+ * @covers     \mod_streak\local\qualifier
+ * @covers     \mod_streak\local\reminder
+ * @covers     \mod_streak\local\leaderboard
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\evaluator::class)]
+#[CoversClass(\mod_streak\local\qualifier::class)]
+#[CoversClass(\mod_streak\local\reminder::class)]
+#[CoversClass(\mod_streak\local\leaderboard::class)]
 final class instanceoverride_test extends \advanced_testcase {
     /**
      * Create an activity whose fields deliberately disagree with the site settings.
@@ -57,8 +66,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The cadence period and goal used are the activity's, not the site's.
-     *
-     * @covers \mod_streak\local\evaluator::goal
      */
     public function test_cadence_period_and_goal(): void {
         $this->resetAfterTest();
@@ -72,8 +79,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The qualifying mode used is the activity's.
-     *
-     * @covers \mod_streak\local\qualifier::completion_qualifies
      */
     public function test_qualify_mode(): void {
         $this->resetAfterTest();
@@ -89,8 +94,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The excluded activity types are the activity's.
-     *
-     * @covers \mod_streak\local\qualifier::excluded_types
      */
     public function test_excluded_activity_types(): void {
         $this->resetAfterTest();
@@ -105,8 +108,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The weekday mask used is the activity's.
-     *
-     * @covers \mod_streak\local\evaluator::mask
      */
     public function test_active_days(): void {
         $this->resetAfterTest();
@@ -116,8 +117,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The end-date mode and custom date used are the activity's.
-     *
-     * @covers \mod_streak\local\evaluator::resolved_end_date
      */
     public function test_end_date(): void {
         $this->resetAfterTest();
@@ -138,8 +137,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The freeze accrual rate used is the activity's.
-     *
-     * @covers \mod_streak\local\evaluator::ensure_current
      */
     public function test_freeze_rate_and_cap(): void {
         $this->resetAfterTest();
@@ -174,8 +171,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * Work-to-win during a break is the activity's setting.
-     *
-     * @covers \mod_streak\local\evaluator::ensure_current
      */
     public function test_reward_breaks(): void {
         $this->resetAfterTest();
@@ -208,8 +203,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The reminder hour used is the activity's.
-     *
-     * @covers \mod_streak\local\reminder::process
      */
     public function test_reminder_hour(): void {
         $this->resetAfterTest();
@@ -240,8 +233,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * The early heads-up flag used is the activity's.
-     *
-     * @covers \mod_streak\local\evaluator::reminder_status
      */
     public function test_early_headsup(): void {
         $this->resetAfterTest();
@@ -266,8 +257,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * Staff exclusion on the leaderboard follows the activity.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_exclude_staff(): void {
         global $DB;
@@ -303,8 +292,6 @@ final class instanceoverride_test extends \advanced_testcase {
 
     /**
      * Excluded roles on the leaderboard follow the activity.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_exclude_roles(): void {
         global $DB;
@@ -349,8 +336,6 @@ final class instanceoverride_test extends \advanced_testcase {
      * get_config('mod_streak', ...) at runtime, an activity's own value could be silently ignored
      * again. Only the breaks calendar is allowed, because it is deliberately site-wide and is
      * combined with the activity's own calendar in evaluator::ranges().
-     *
-     * @coversNothing
      */
     public function test_runtime_never_reads_the_site_configuration(): void {
         global $CFG;

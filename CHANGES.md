@@ -2,6 +2,36 @@
 
 All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
+## 0.11.0 — 2026-10-10
+
+Plugin version `2026101000`.
+
+### Added
+
+- **Moodle 5.3 support.** The plugin runs unchanged on Moodle 5.3; `$plugin->supported` is now
+  `[405, 503]` and the CI matrix covers 5.3 on PHP 8.3 and 8.4. The CI database images moved to
+  PostgreSQL 17 and MariaDB 11.4, the minimums Moodle 5.3 requires.
+- **Full test coverage.** 47 new PHPUnit tests (188 in total) and 3 new Behat scenarios (12 in
+  total). The activity settings form, the database upgrade steps, backup and restore, the
+  course-progress qualifying mode and the privacy edge cases were previously untested. Every class
+  and method is now executed by a test that declares it as its coverage target.
+
+### Changed
+
+- Test metadata moved from doc-comments to PHPUnit attributes (`CoversClass`, `CoversFunction`,
+  `DataProvider`). PHPUnit 11 (Moodle 5.0 and later) deprecated doc-comment metadata and PHPUnit 12
+  drops it. The doc-comments stay for Moodle 4.5, which runs PHPUnit 9.
+
+### Fixed
+
+- **The activity index of a course without a Solin Streaks activity showed a debugging error**
+  instead of a message. It asked for a core language string that does not exist in any Moodle
+  version. It now says "There are no Solin Streaks activities in this course", as core modules do.
+- A monthly streak period requested for a moment before the streak started returned a window
+  ending the day before the streak's start. It now clamps to the first window, as the fortnightly
+  period already did. No current code path asks for such a moment; the fix keeps the two rolling
+  periods consistent.
+
 ## 0.10.1 — 2026-08-30
 
 Plugin version `2026083001`.

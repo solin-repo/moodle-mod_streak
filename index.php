@@ -46,7 +46,7 @@ echo $OUTPUT->heading(get_string('modulenameplural', 'mod_streak'));
 $instances = get_all_instances_in_course('streak', $course);
 if (empty($instances)) {
     notice(
-        get_string('noinstances', 'moodle', get_string('modulenameplural', 'mod_streak')),
+        get_string('thereareno', 'moodle', get_string('modulenameplural', 'mod_streak')),
         new moodle_url('/course/view.php', ['id' => $course->id])
     );
 }

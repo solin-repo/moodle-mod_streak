@@ -19,6 +19,7 @@ namespace mod_streak;
 use mod_streak\local\evaluator;
 use mod_streak\local\reminder;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * The reminder hour, the early heads-up, and reminders on days that do not count.
@@ -27,9 +28,13 @@ use mod_streak\local\state;
  * went out on whichever hourly cron run first found a learner at risk.
  *
  * @package    mod_streak
+ * @covers     \mod_streak\local\reminder
+ * @covers     \mod_streak\local\evaluator
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\reminder::class)]
+#[CoversClass(\mod_streak\local\evaluator::class)]
 final class reminderhour_test extends \advanced_testcase {
     /**
      * Create a streak instance with the given overrides.
@@ -62,8 +67,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * Nothing is sent before the configured hour, and it is sent at or after it.
-     *
-     * @covers \mod_streak\local\reminder::process
      */
     public function test_nothing_before_the_hour_and_sent_after(): void {
         $this->resetAfterTest();
@@ -94,8 +97,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * A different configured hour moves the delivery time.
-     *
-     * @covers \mod_streak\local\reminder::process
      */
     public function test_the_configured_hour_is_honoured(): void {
         $this->resetAfterTest();
@@ -125,8 +126,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * The hour is the learner's own local hour, not the server's.
-     *
-     * @covers \mod_streak\local\reminder::process
      */
     public function test_the_hour_is_evaluated_in_the_learner_timezone(): void {
         $this->resetAfterTest();
@@ -150,8 +149,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * Still deduped to one reminder a day once the hour has passed.
-     *
-     * @covers \mod_streak\local\reminder::process
      */
     public function test_still_only_one_reminder_a_day(): void {
         $this->resetAfterTest();
@@ -172,8 +169,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * No reminder on a weekday that does not count.
-     *
-     * @covers \mod_streak\local\evaluator::reminder_status
      */
     public function test_no_reminder_on_a_day_that_does_not_count(): void {
         $this->resetAfterTest();
@@ -192,8 +187,6 @@ final class reminderhour_test extends \advanced_testcase {
 
     /**
      * The early heads-up never applies to a daily cadence, which has no earlier day.
-     *
-     * @covers \mod_streak\local\evaluator::reminder_status
      */
     public function test_early_headsup_does_not_apply_to_a_daily_cadence(): void {
         $this->resetAfterTest();

@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use mod_streak\admin\setting_breaks_calendar;
 use mod_streak\local\breaks;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,6 +33,7 @@ require_once($CFG->libdir . '/adminlib.php'); // For the admin_setting_configtex
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\admin\setting_breaks_calendar::class)]
 final class setting_breaks_calendar_test extends \advanced_testcase {
     public function test_validate_accepts_valid_and_rejects_invalid(): void {
         $this->resetAfterTest();

@@ -18,15 +18,23 @@ namespace mod_streak;
 
 use mod_streak\local\daily_ledger;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Backup/restore preserves streaks and the leaderboard (the §16 guarantee).
  *
- * @coversNothing
  * @package    mod_streak
+ * @covers     \backup_streak_activity_task
+ * @covers     \backup_streak_activity_structure_step
+ * @covers     \restore_streak_activity_task
+ * @covers     \restore_streak_activity_structure_step
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\backup_streak_activity_task::class)]
+#[CoversClass(\backup_streak_activity_structure_step::class)]
+#[CoversClass(\restore_streak_activity_task::class)]
+#[CoversClass(\restore_streak_activity_structure_step::class)]
 final class backup_restore_test extends \advanced_testcase {
     public function test_backup_restore_preserves_user_streaks(): void {
         global $DB, $USER, $CFG;
@@ -150,6 +158,20 @@ final class backup_restore_test extends \advanced_testcase {
 
         $this->assertSame(0, $DB->count_records('streak_state', ['streakid' => $restored->id]));
         $this->assertSame(0, $DB->count_records('streak_day', ['streakid' => $restored->id]));
+    }
+
+    public function test_restore_task_declares_no_content_links_or_log_rules(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+        require_once($CFG->dirroot . '/mod/streak/backup/moodle2/backup_streak_activity_task.class.php');
+        require_once($CFG->dirroot . '/mod/streak/backup/moodle2/restore_streak_activity_task.class.php');
+
+        // The activity stores no files or links, and its only event (module viewed) maps itself.
+        $this->assertSame('<a href="x">', \backup_streak_activity_task::encode_content_links('<a href="x">'));
+        $this->assertSame([], \restore_streak_activity_task::define_decode_contents());
+        $this->assertSame([], \restore_streak_activity_task::define_decode_rules());
+        $this->assertSame([], \restore_streak_activity_task::define_restore_log_rules());
     }
 
     /**

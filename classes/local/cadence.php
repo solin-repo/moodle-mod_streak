@@ -81,7 +81,9 @@ final class cadence {
                     $months = 0;
                 }
                 $start = $anchormid->modify('+' . $months . ' months');
-                if ($start > $mid) {
+                // Step back a month when today is before the anchor's day of the month, but never to a
+                // window before the anchor itself (a reference time before the streak started).
+                if ($start > $mid && $months > 0) {
                     $months--;
                     $start = $anchormid->modify('+' . $months . ' months');
                 }

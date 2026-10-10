@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\milestone;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for course-anchored streak progress and the weekly fallback.
@@ -26,6 +27,7 @@ use mod_streak\local\milestone;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\milestone::class)]
 final class milestone_test extends \advanced_testcase {
     public function test_course_progress_fills_toward_the_goal(): void {
         // A 60-day course, 39-day streak: the ring is 39/60, not a band fraction.
@@ -88,5 +90,36 @@ final class milestone_test extends \advanced_testcase {
         $streak = $DB->get_record('streak', ['id' => $created->id], '*', MUST_EXIST);
 
         $this->assertSame(0, milestone::goal_periods($streak));
+    }
+
+    public function test_goal_periods_divides_the_course_by_the_period_length(): void {
+        $this->resetAfterTest();
+        $start = gmmktime(0, 0, 0, 6, 1, 2026);
+        $course = $this->getDataGenerator()->create_course(['startdate' => $start, 'enddate' => $start + 84 * DAYSECS]);
+        $base = ['course' => $course->id, 'enddatemode' => 'course'];
+
+        $this->assertSame(12, milestone::goal_periods((object) ($base + ['cadenceperiod' => 'weekly'])));
+        $this->assertSame(6, milestone::goal_periods((object) ($base + ['cadenceperiod' => 'fortnightly'])));
+        $this->assertSame(2, milestone::goal_periods((object) ($base + ['cadenceperiod' => 'monthly'])));
+        // A course shorter than one period still has a goal of one.
+        $this->assertSame(1, milestone::goal_periods((object) [
+            'course' => $course->id,
+            'enddatemode' => 'custom',
+            'customenddate' => $start + 3 * DAYSECS,
+            'cadenceperiod' => 'monthly',
+        ]));
+    }
+
+    public function test_goal_periods_zero_when_the_end_is_not_after_the_start(): void {
+        $this->resetAfterTest();
+        $start = gmmktime(0, 0, 0, 6, 1, 2026);
+        $course = $this->getDataGenerator()->create_course(['startdate' => $start]);
+
+        $this->assertSame(0, milestone::goal_periods((object) [
+            'course' => $course->id,
+            'enddatemode' => 'custom',
+            'customenddate' => $start - DAYSECS,
+            'cadenceperiod' => 'daily',
+        ]));
     }
 }

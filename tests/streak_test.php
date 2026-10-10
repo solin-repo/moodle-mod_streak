@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\streak;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the streak instance repository (for_course / instance / memo / weekstart).
@@ -26,6 +27,7 @@ use mod_streak\local\streak;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\streak::class)]
 final class streak_test extends \advanced_testcase {
     public function test_for_course_instance_and_memo(): void {
         global $DB;

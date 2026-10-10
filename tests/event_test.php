@@ -17,6 +17,8 @@
 namespace mod_streak;
 
 use mod_streak\output\mobile;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversFunction;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -27,15 +29,24 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * Tests for the mod_streak course module viewed event.
  *
  * @package    mod_streak
+ * @covers     ::streak_view
+ * @covers     \mod_streak\event\course_module_viewed
+ * @covers     ::streak_cm_info_view
+ * @covers     \mod_streak\output\mobile
+ * @covers     ::streak_index_view
+ * @covers     \mod_streak\event\course_module_instance_list_viewed
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversFunction('streak_view')]
+#[CoversClass(\mod_streak\event\course_module_viewed::class)]
+#[CoversFunction('streak_cm_info_view')]
+#[CoversClass(\mod_streak\output\mobile::class)]
+#[CoversFunction('streak_index_view')]
+#[CoversClass(\mod_streak\event\course_module_instance_list_viewed::class)]
 final class event_test extends \advanced_testcase {
     /**
      * streak_view() triggers a well-formed course module viewed event.
-     *
-     * @covers ::streak_view
-     * @covers \mod_streak\event\course_module_viewed
      */
     public function test_streak_view_triggers_event(): void {
         global $DB;
@@ -72,8 +83,6 @@ final class event_test extends \advanced_testcase {
 
     /**
      * The inline course-page render is the activity view, so it must log module access.
-     *
-     * @covers ::streak_cm_info_view
      */
     public function test_cm_info_view_logs_module_access(): void {
         global $PAGE;
@@ -97,8 +106,6 @@ final class event_test extends \advanced_testcase {
 
     /**
      * Opening the activity in the Moodle App logs the same module access event.
-     *
-     * @covers \mod_streak\output\mobile
      */
     public function test_mobile_view_logs_module_access(): void {
         global $PAGE;
@@ -126,9 +133,6 @@ final class event_test extends \advanced_testcase {
      * index.php calls this helper; that the script calls it is covered by Behat (the activity
      * index scenario asserts the entry lands in the course log report), because a script-level
      * trigger cannot be driven from PHPUnit.
-     *
-     * @covers ::streak_index_view
-     * @covers \mod_streak\event\course_module_instance_list_viewed
      */
     public function test_index_view_triggers_event(): void {
         $this->resetAfterTest();
@@ -159,8 +163,6 @@ final class event_test extends \advanced_testcase {
 
     /**
      * A learner without the view capability never reaches the inline widget, so nothing is logged.
-     *
-     * @covers ::streak_cm_info_view
      */
     public function test_cm_info_view_logs_nothing_without_capability(): void {
         global $PAGE;
@@ -183,5 +185,12 @@ final class event_test extends \advanced_testcase {
         $sink->close();
 
         $this->assertCount(0, $events);
+    }
+
+    public function test_viewed_event_maps_its_object_for_restore(): void {
+        $this->assertSame(
+            ['db' => 'streak', 'restore' => 'streak'],
+            \mod_streak\event\course_module_viewed::get_objectid_mapping()
+        );
     }
 }

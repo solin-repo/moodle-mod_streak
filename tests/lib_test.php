@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use mod_streak\local\daily_ledger;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversFunction;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -28,14 +29,26 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * Tests for the mod_streak lib.php interface functions.
  *
  * @package    mod_streak
+ * @covers     ::streak_supports
+ * @covers     ::streak_is_branded
+ * @covers     ::streak_add_instance
+ * @covers     ::streak_update_instance
+ * @covers     ::streak_delete_instance
+ * @covers     ::streak_cm_info_view
+ * @covers     ::streak_course_has_instance
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversFunction('streak_supports')]
+#[CoversFunction('streak_is_branded')]
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_update_instance')]
+#[CoversFunction('streak_delete_instance')]
+#[CoversFunction('streak_cm_info_view')]
+#[CoversFunction('streak_course_has_instance')]
 final class lib_test extends \advanced_testcase {
     /**
      * The feature flags describe an inline, no-view-link, ungraded interactive activity.
-     *
-     * @covers ::streak_supports
      */
     public function test_supports_declares_inline_no_view_module(): void {
         $this->assertTrue(streak_supports(FEATURE_MOD_INTRO));
@@ -51,8 +64,6 @@ final class lib_test extends \advanced_testcase {
 
     /**
      * The flame icon keeps its own colors (not tinted by the purpose filter).
-     *
-     * @covers ::streak_is_branded
      */
     public function test_icon_is_branded(): void {
         $this->assertTrue(streak_is_branded());
@@ -60,10 +71,6 @@ final class lib_test extends \advanced_testcase {
 
     /**
      * Add, update, then delete an instance through the lib API; delete must remove per-user data too.
-     *
-     * @covers ::streak_add_instance
-     * @covers ::streak_update_instance
-     * @covers ::streak_delete_instance
      */
     public function test_add_update_delete_instance(): void {
         global $DB;
@@ -108,8 +115,6 @@ final class lib_test extends \advanced_testcase {
 
     /**
      * cm_info_view injects the inline widget HTML as the activity's course-page content.
-     *
-     * @covers ::streak_cm_info_view
      */
     public function test_cm_info_view_sets_inline_widget(): void {
         global $PAGE;
@@ -125,5 +130,46 @@ final class lib_test extends \advanced_testcase {
         streak_cm_info_view($cm);
 
         $this->assertStringContainsString('mod-streak-widget', (string) $cm->content);
+    }
+
+    public function test_cm_info_view_renders_nothing_for_a_missing_instance(): void {
+        global $DB, $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student');
+        $module = $this->getDataGenerator()->create_module('streak', ['course' => $course->id]);
+        $cm = get_fast_modinfo($course)->get_cm($module->cmid);
+        $DB->delete_records('streak', ['id' => $module->id]);
+        $this->setUser($student);
+        $PAGE->set_url('/');
+
+        streak_cm_info_view($cm);
+
+        $this->assertSame('', (string) $cm->content);
+    }
+
+    public function test_cm_info_view_renders_nothing_during_initial_install(): void {
+        global $CFG, $PAGE;
+        $this->resetAfterTest();
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student');
+        $module = $this->getDataGenerator()->create_module('streak', ['course' => $course->id]);
+        $cm = get_fast_modinfo($course)->get_cm($module->cmid);
+        $this->setUser($student);
+        $PAGE->set_url('/');
+
+        // During the initial install there are no roles yet, so there is nobody to render for.
+        // Reading the content also runs the view callback, so read it before roles come back.
+        $CFG->rolesactive = 0;
+        streak_cm_info_view($cm);
+        $content = (string) $cm->content;
+        $CFG->rolesactive = 1;
+
+        $this->assertSame('', $content);
+    }
+
+    public function test_course_has_instance_is_false_for_an_unsaved_course(): void {
+        $this->assertFalse(streak_course_has_instance(0));
+        $this->assertFalse(streak_course_has_instance(-1));
     }
 }

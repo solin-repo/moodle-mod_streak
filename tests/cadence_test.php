@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\cadence;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for the cadence (period) engine.
@@ -26,6 +27,7 @@ use mod_streak\local\cadence;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\cadence::class)]
 final class cadence_test extends \advanced_testcase {
     /** @var \DateTimeZone Amsterdam timezone used across the cases. */
     private \DateTimeZone $ams;
@@ -126,5 +128,27 @@ final class cadence_test extends \advanced_testcase {
         $this->assertSame(7, $p->days);
         // Wed 25 -> Sun 29 inclusive = 5, despite the DST transition in the window.
         $this->assertSame(5, cadence::days_remaining($p, $now, $this->ams));
+    }
+
+    public function test_rolling_windows_never_start_before_the_anchor(): void {
+        // A reference time before the streak start (a clock skew, or a backdated event) clamps to the
+        // first window instead of producing a window before the streak existed.
+        $anchor = $this->ts('2026-06-15 00:00', $this->ams);
+        $before = $this->ts('2026-05-20 10:00', $this->ams);
+
+        $fortnight = cadence::period(cadence::FORTNIGHTLY, $before, $this->ams, $anchor);
+        $this->assertSame(20260615, $fortnight->startday);
+        $this->assertSame(20260628, $fortnight->endday);
+
+        $month = cadence::period(cadence::MONTHLY, $this->ts('2026-04-20 10:00', $this->ams), $this->ams, $anchor);
+        $this->assertSame(20260615, $month->startday);
+        $this->assertSame(20260714, $month->endday);
+    }
+
+    public function test_rolling_windows_without_an_anchor_start_today(): void {
+        $now = $this->ts('2026-06-17 10:00', $this->ams);
+
+        $this->assertSame(20260617, cadence::period(cadence::FORTNIGHTLY, $now, $this->ams)->startday);
+        $this->assertSame(20260617, cadence::period(cadence::MONTHLY, $now, $this->ams)->startday);
     }
 }

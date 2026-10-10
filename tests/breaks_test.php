@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\breaks;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Unit tests for the breaks (holiday) calendar.
@@ -26,6 +27,7 @@ use mod_streak\local\breaks;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\breaks::class)]
 final class breaks_test extends \advanced_testcase {
     public function test_parse_and_sort(): void {
         $text = "# Term breaks\n2026-07-06, 2026-07-10\n\n2026-05-01, 2026-05-01\n";
@@ -65,5 +67,22 @@ final class breaks_test extends \advanced_testcase {
         // Whole period inside a break -> 0.
         $all = breaks::parse("2026-06-15, 2026-06-21");
         $this->assertSame(0, breaks::nonbreak_days($all, 20260615, 20260621));
+    }
+
+    public function test_malformed_dates_are_rejected_with_the_line_number(): void {
+        $this->assertStringContainsString(
+            "Line 2: '6 July' is not a valid YYYY-MM-DD date.",
+            breaks::validate("# Summer\n6 July, 2026-07-10")
+        );
+        $this->assertStringContainsString(
+            "Line 1: '2026-07-31x' is not a valid YYYY-MM-DD date.",
+            breaks::validate("2026-07-06, 2026-07-31x")
+        );
+    }
+
+    public function test_an_unreadable_day_counts_as_active(): void {
+        // A day number that is not a date cannot be placed on a weekday, so it never switches a day off.
+        $this->assertTrue(breaks::is_active_weekday('0000000', 0));
+        $this->assertFalse(breaks::is_active_weekday('0000000', 20260706));
     }
 }

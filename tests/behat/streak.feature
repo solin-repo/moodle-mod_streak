@@ -142,3 +142,30 @@ Feature: Solin Streaks activity
     And I expand all fieldsets
     Then the field "activeday7" matches value "0"
     And the field "activeday1" matches value "1"
+
+  Scenario: The activity index of a course without Solin Streaks says there is none
+    Given the following "courses" exist:
+      | fullname | shortname |
+      | Course 2 | C2        |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student1 | C2     | student |
+    When I am on the "Course 2" "streak index" page logged in as "student1"
+    Then I should see "There are no Solin Streaks activities in this course"
+
+  Scenario: An activity followed from the index leads back to its place on the course page
+    When I am on the "Course 1" "streak index" page logged in as "student1"
+    And I follow "Keep it up"
+    Then I should see "Streak leaderboard"
+    And I should see "Hide me from the leaderboard"
+
+  Scenario: The site-wide breaks calendar only accepts valid date ranges
+    Given I log in as "admin"
+    And I navigate to "Plugins > Activity modules > Solin Streaks" in site administration
+    When I set the field "Site-wide breaks calendar" to "2026-12-24, 2026-12-20"
+    And I press "Save changes"
+    Then I should see "start date is after end date"
+    When I set the field "Site-wide breaks calendar" to "2026-12-20, 2027-01-03"
+    And I press "Save changes"
+    Then I should see "Changes saved"
+    And the field "Site-wide breaks calendar" matches value "2026-12-20, 2027-01-03"

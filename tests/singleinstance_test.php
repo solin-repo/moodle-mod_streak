@@ -17,6 +17,8 @@
 namespace mod_streak;
 
 use mod_streak\local\streak;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversFunction;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,15 +35,22 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * so incoming user data is never lost, which is why for_course() must be deterministic.
  *
  * @package    mod_streak
+ * @covers     ::streak_add_instance
+ * @covers     ::streak_course_has_instance
+ * @covers     ::streak_update_instance
+ * @covers     \mod_streak\local\streak
+ * @covers     \restore_streak_activity_structure_step
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_course_has_instance')]
+#[CoversFunction('streak_update_instance')]
+#[CoversClass(\mod_streak\local\streak::class)]
+#[CoversClass(\restore_streak_activity_structure_step::class)]
 final class singleinstance_test extends \advanced_testcase {
     /**
      * The first instance in a course is created normally.
-     *
-     * @covers ::streak_add_instance
-     * @covers ::streak_course_has_instance
      */
     public function test_first_instance_is_allowed(): void {
         $this->resetAfterTest();
@@ -58,8 +67,6 @@ final class singleinstance_test extends \advanced_testcase {
      *
      * This is the path taken by web services, CLI and generators — everything that never touches
      * mod_form::validation().
-     *
-     * @covers ::streak_add_instance
      */
     public function test_second_instance_is_refused(): void {
         $this->resetAfterTest();
@@ -73,8 +80,6 @@ final class singleinstance_test extends \advanced_testcase {
 
     /**
      * A second instance in a *different* course is fine.
-     *
-     * @covers ::streak_add_instance
      */
     public function test_other_courses_are_unaffected(): void {
         $this->resetAfterTest();
@@ -92,9 +97,6 @@ final class singleinstance_test extends \advanced_testcase {
 
     /**
      * Editing an existing instance does not trip its own guard.
-     *
-     * @covers ::streak_course_has_instance
-     * @covers ::streak_update_instance
      */
     public function test_editing_the_existing_instance_is_allowed(): void {
         global $DB;
@@ -124,8 +126,6 @@ final class singleinstance_test extends \advanced_testcase {
      * why the fix is worth having: the old code depended on unspecified behaviour that no test can
      * reliably reproduce on demand. The ORDER BY makes it correct by construction rather than by
      * luck; this test documents the contract and guards the direction.
-     *
-     * @covers \mod_streak\local\streak::for_course
      */
     public function test_oldest_instance_wins_when_a_duplicate_exists(): void {
         global $DB;
@@ -157,9 +157,6 @@ final class singleinstance_test extends \advanced_testcase {
      * existing instance. It must succeed (nothing lost), and crediting must stay with the
      * original instance. The same code path serves the course UI's "Duplicate" action, which
      * runs backup + restore internally (course/lib.php duplicate_module()).
-     *
-     * @covers \restore_streak_activity_structure_step::process_streak
-     * @covers \mod_streak\local\streak::for_course
      */
     public function test_restore_into_a_course_that_already_has_one(): void {
         global $CFG, $DB, $USER;

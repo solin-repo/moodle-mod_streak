@@ -32,10 +32,11 @@ activity** — a corporate theme (Cadence) on the left, a playful educational th
 
 ## Compatibility
 
-The same plugin codebase supports Moodle 4.5 LTS through 5.2.
+The same plugin codebase supports Moodle 4.5 LTS through 5.3.
 
 | Moodle | PHP | Plugin path |
 |--------|-----|-------------|
+| 5.3 | 8.3+ | `public/mod/streak` |
 | 5.2 | 8.3+ | `public/mod/streak` |
 | 5.1 | 8.2+ | `public/mod/streak` |
 | 5.0 | 8.2+ | `mod/streak` |
@@ -267,13 +268,16 @@ guest homepage:
 
 ## Testing
 
-The plugin ships a full automated test suite: **141 PHPUnit tests** covering the streak
+The plugin ships a full automated test suite: **188 PHPUnit tests** covering the streak
 engine, cadence, evaluator, weekday mask, leaderboard, reminders, per-activity setting
-overrides, backup/restore, privacy, and the output classes, plus **9 Behat scenarios**
-covering the inline display, leaderboard opt-out, the one-activity-per-course rule, and
-the activity settings form field by field. The suite runs green on Moodle 4.5 LTS, 5.1
-and 5.2, and every push is checked by a GitHub Actions matrix spanning Moodle 4.5, 5.0,
-5.1 and 5.2 on PHP 8.1 to 8.3, against both PostgreSQL and MariaDB.
+overrides, the activity settings form, the database upgrade steps, backup/restore, privacy,
+and the output classes, plus **12 Behat scenarios** covering the inline display, leaderboard
+opt-out, the activity index, the one-activity-per-course rule, the site-wide breaks calendar,
+and the activity settings form field by field. The PHPUnit suite executes every class and
+method of the plugin (100% of classes and methods, 99.7% of lines; the remainder are
+file-level `require_once` lines that no test can be attributed to). The suite runs green on
+Moodle 4.5 LTS, 5.2 and 5.3, and every push is checked by a GitHub Actions matrix spanning
+Moodle 4.5, 5.0, 5.1, 5.2 and 5.3 on PHP 8.1 to 8.4, against both PostgreSQL and MariaDB.
 
 ```bash
 php admin/tool/phpunit/cli/init.php

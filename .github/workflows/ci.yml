@@ -2,10 +2,10 @@ name: Moodle Plugin CI
 
 on:
   push:
+    # One codebase serves every supported Moodle version, so main is the only branch; the matrix
+    # below tests it against each version.
     branches:
       - main
-      - MOODLE_501_STABLE
-      - MOODLE_502_STABLE
   pull_request:
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -27,7 +27,7 @@ jobs:
           --health-timeout 5s
           --health-retries 3
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:11.4
         env:
           MYSQL_USER: 'root'
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
@@ -45,8 +45,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # mod_streak declares $plugin->supported = [405, 502] (Moodle 4.5 LTS through 5.2).
-          # Spread the supported range across PHP versions and both database engines.
+          # mod_streak declares $plugin->supported = [405, 503] (Moodle 4.5 LTS through 5.3).
+          # Spread the supported range across PHP versions and both database engines. Moodle 5.3
+          # requires PostgreSQL 17 and MariaDB 11.4, which every older branch also accepts.
           - php: '8.1'
             moodle-branch: 'MOODLE_405_STABLE'
             database: pgsql
@@ -61,6 +62,12 @@ jobs:
             database: mariadb
           - php: '8.3'
             moodle-branch: 'MOODLE_502_STABLE'
+            database: pgsql
+          - php: '8.3'
+            moodle-branch: 'MOODLE_503_STABLE'
+            database: mariadb
+          - php: '8.4'
+            moodle-branch: 'MOODLE_503_STABLE'
             database: pgsql
 
     steps:

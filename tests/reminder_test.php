@@ -16,9 +16,10 @@
 
 namespace mod_streak;
 
-use mod_streak\local\reminder;
 use mod_streak\local\evaluator;
+use mod_streak\local\reminder;
 use mod_streak\local\state;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the make-or-break reminder.
@@ -28,6 +29,7 @@ use mod_streak\local\state;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\reminder::class)]
 final class reminder_test extends \advanced_testcase {
     public function test_is_make_or_break_rule(): void {
         $this->assertTrue(reminder::is_make_or_break(2, 2));   // Every remaining day now required.
@@ -87,6 +89,27 @@ final class reminder_test extends \advanced_testcase {
         $state = state::get_or_create($streak->id, (int) $user->id);
         $this->assertFalse(reminder::process($streak, $state, $now));
         $this->assertCount(0, $sink->get_messages());
+        $sink->close();
+    }
+
+    public function test_an_out_of_range_reminder_hour_falls_back_to_six_in_the_evening(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user(['timezone' => 'UTC']);
+        $streak = $this->make_daily_streak();
+        $DB->set_field('streak', 'reminderhour', 30, ['id' => $streak->id]);
+        $streak = $DB->get_record('streak', ['id' => $streak->id], '*', MUST_EXIST);
+
+        $yesterday = (new \DateTimeImmutable('yesterday 10:00', new \DateTimeZone('UTC')))->getTimestamp();
+        evaluator::credit($streak, (int) $user->id, $yesterday);
+        $sink = $this->redirectMessages();
+
+        // 17:00 is before the fallback hour; 18:30 is after it.
+        $early = (new \DateTimeImmutable('today 17:00', new \DateTimeZone('UTC')))->getTimestamp();
+        $this->assertFalse(reminder::process($streak, state::get_or_create($streak->id, (int) $user->id), $early));
+        $late = (new \DateTimeImmutable('today 18:30', new \DateTimeZone('UTC')))->getTimestamp();
+        $this->assertTrue(reminder::process($streak, state::get_or_create($streak->id, (int) $user->id), $late));
+        $this->assertCount(1, $sink->get_messages());
         $sink->close();
     }
 }

@@ -18,6 +18,7 @@ namespace mod_streak;
 
 use mod_streak\local\evaluator;
 use mod_streak\output\widget;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Tests for the plugin renderer (renders the widget renderable through its template).
@@ -27,6 +28,7 @@ use mod_streak\output\widget;
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\output\renderer::class)]
 final class renderer_test extends \advanced_testcase {
     public function test_render_widget_outputs_html(): void {
         global $DB, $PAGE;

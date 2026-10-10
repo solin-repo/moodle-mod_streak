@@ -16,6 +16,10 @@
 
 namespace mod_streak;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversFunction;
+use PHPUnit\Framework\Attributes\DataProvider;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -30,9 +34,15 @@ require_once($CFG->dirroot . '/mod/streak/lib.php');
  * new activity, and the activity's own value wins from then on.
  *
  * @package    mod_streak
+ * @covers     ::streak_add_instance
+ * @covers     ::streak_apply_site_defaults
+ * @covers     \mod_streak\local\evaluator
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversFunction('streak_add_instance')]
+#[CoversFunction('streak_apply_site_defaults')]
+#[CoversClass(\mod_streak\local\evaluator::class)]
 final class sitedefaults_test extends \advanced_testcase {
     /**
      * Every configurable field, with a site value that differs from the install.xml default.
@@ -62,9 +72,8 @@ final class sitedefaults_test extends \advanced_testcase {
      * @param string $field Instance field name.
      * @param mixed $sitevalue Value configured at site level.
      * @param mixed $columndefault The install.xml default the field would otherwise take.
-     * @covers ::streak_add_instance
-     * @covers ::streak_apply_site_defaults
      */
+    #[DataProvider('setting_provider')]
     public function test_site_setting_seeds_a_new_activity(string $field, $sitevalue, $columndefault): void {
         global $DB;
         $this->resetAfterTest();
@@ -94,8 +103,8 @@ final class sitedefaults_test extends \advanced_testcase {
      * @param string $field Instance field name.
      * @param mixed $sitevalue Value configured at site level.
      * @param mixed $columndefault Unused here.
-     * @covers ::streak_apply_site_defaults
      */
+    #[DataProvider('setting_provider')]
     public function test_activity_value_overrides_the_site_setting(string $field, $sitevalue, $columndefault): void {
         global $DB;
         $this->resetAfterTest();
@@ -123,8 +132,6 @@ final class sitedefaults_test extends \advanced_testcase {
 
     /**
      * Changing a site setting leaves activities that already exist alone.
-     *
-     * @covers ::streak_apply_site_defaults
      */
     public function test_changing_a_site_setting_does_not_touch_existing_activities(): void {
         global $DB;
@@ -145,8 +152,6 @@ final class sitedefaults_test extends \advanced_testcase {
 
     /**
      * With nothing configured at site level the documented column defaults apply.
-     *
-     * @covers ::streak_apply_site_defaults
      */
     public function test_unset_config_falls_back_to_the_column_defaults(): void {
         global $DB;
@@ -173,8 +178,6 @@ final class sitedefaults_test extends \advanced_testcase {
      *
      * They are kept out of the data provider because their "different" value is a string rather than
      * a number, but they are settings like any other and must not be exempt from the contract.
-     *
-     * @covers ::streak_apply_site_defaults
      */
     public function test_text_settings_are_seeded(): void {
         global $DB;
@@ -199,8 +202,6 @@ final class sitedefaults_test extends \advanced_testcase {
      * This is the difference between a setting that can be overridden and one that only looks like
      * it can: a teacher who clears "roles to leave off the leaderboard" means no roles, not
      * "whatever the site says".
-     *
-     * @covers ::streak_apply_site_defaults
      */
     public function test_an_explicitly_empty_value_is_not_overwritten(): void {
         global $DB;
@@ -226,8 +227,6 @@ final class sitedefaults_test extends \advanced_testcase {
      *
      * breakscalendar is the one setting that always worked, but nothing proved it: no test had ever
      * set the site-level value, only the instance column.
-     *
-     * @covers \mod_streak\local\evaluator::ranges
      */
     public function test_the_site_breaks_calendar_reaches_the_evaluator(): void {
         $this->resetAfterTest();
@@ -248,8 +247,6 @@ final class sitedefaults_test extends \advanced_testcase {
 
     /**
      * The seeded freeze values genuinely drive the engine, not just the stored row.
-     *
-     * @covers \mod_streak\local\evaluator::apply_lifecycle
      */
     public function test_seeded_freeze_values_change_behaviour(): void {
         $this->resetAfterTest();

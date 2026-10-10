@@ -17,6 +17,7 @@
 namespace mod_streak;
 
 use mod_streak\local\leaderboard;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
  * Keeping named roles off the leaderboard.
@@ -25,9 +26,11 @@ use mod_streak\local\leaderboard;
  * excluded by capability, these by explicit role.
  *
  * @package    mod_streak
+ * @covers     \mod_streak\local\leaderboard
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\leaderboard::class)]
 final class excluderoles_test extends \advanced_testcase {
     /**
      * Build a course with three enrolled students who all have a streak.
@@ -65,8 +68,6 @@ final class excluderoles_test extends \advanced_testcase {
 
     /**
      * With nothing excluded everybody is listed.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_nobody_excluded_by_default(): void {
         [$streak, $context] = $this->make_board();
@@ -76,8 +77,6 @@ final class excluderoles_test extends \advanced_testcase {
 
     /**
      * Members holding an excluded role are removed, and only them.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_an_excluded_role_is_removed(): void {
         global $DB;
@@ -102,8 +101,6 @@ final class excluderoles_test extends \advanced_testcase {
 
     /**
      * Several excluded roles are honoured together.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_several_excluded_roles(): void {
         global $DB;
@@ -123,8 +120,6 @@ final class excluderoles_test extends \advanced_testcase {
 
     /**
      * An empty or malformed value excludes nobody rather than everybody.
-     *
-     * @covers \mod_streak\local\leaderboard::fetch
      */
     public function test_an_empty_value_excludes_nobody(): void {
         global $DB;

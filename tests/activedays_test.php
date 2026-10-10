@@ -18,6 +18,8 @@ namespace mod_streak;
 
 use mod_streak\local\breaks;
 use mod_streak\local\engine;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversFunction;
 
 /**
  * The activedays mask: which weekdays count toward a streak.
@@ -27,9 +29,17 @@ use mod_streak\local\engine;
  * everyone losing it every Monday morning.
  *
  * @package    mod_streak
+ * @covers     \mod_streak\local\breaks
+ * @covers     \mod_streak\local\engine
+ * @covers     \mod_streak\local\evaluator
+ * @covers     ::streak_add_instance
  * @copyright  2026 Solin (Onno Schuit) <o.schuit@solin.nl>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(\mod_streak\local\breaks::class)]
+#[CoversClass(\mod_streak\local\engine::class)]
+#[CoversClass(\mod_streak\local\evaluator::class)]
+#[CoversFunction('streak_add_instance')]
 final class activedays_test extends \advanced_testcase {
     /** @var int Monday of the reference week, 2026-08-24. */
     private const MON = 20260824;
@@ -45,8 +55,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * Weekdays resolve to the right position in the mask, Monday first.
-     *
-     * @covers \mod_streak\local\breaks::is_active_weekday
      */
     public function test_weekday_positions_are_iso_monday_first(): void {
         $this->assertTrue(breaks::is_active_weekday('1000000', self::MON), 'Monday is position 1');
@@ -57,8 +65,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * The working-week mask switches the weekend off and leaves weekdays on.
-     *
-     * @covers \mod_streak\local\breaks::is_active_weekday
      */
     public function test_working_week_mask(): void {
         $workweek = '1111100';
@@ -69,8 +75,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * A malformed or empty mask must never make a streak unearnable.
-     *
-     * @covers \mod_streak\local\breaks::is_active_weekday
      */
     public function test_a_broken_mask_falls_back_to_every_day(): void {
         foreach (['', 'nonsense', '11111', '111111111', '1111112'] as $bad) {
@@ -83,8 +87,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * The default mask preserves the behaviour that existed before this feature.
-     *
-     * @covers \mod_streak\local\breaks::nonbreak_days
      */
     public function test_default_mask_counts_every_day(): void {
         $this->assertSame(7, breaks::nonbreak_days([], self::MON, self::SUN));
@@ -93,8 +95,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * A working-week mask reduces the days that count in a week.
-     *
-     * @covers \mod_streak\local\breaks::nonbreak_days
      */
     public function test_working_week_reduces_the_days_that_count(): void {
         $this->assertSame(5, breaks::nonbreak_days([], self::MON, self::SUN, '1111100'));
@@ -102,9 +102,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * The mask and the breaks calendar are a union, and an overlap is not double-counted.
-     *
-     * @covers \mod_streak\local\breaks::is_off_day
-     * @covers \mod_streak\local\breaks::nonbreak_days
      */
     public function test_mask_and_breaks_calendar_combine_as_a_union(): void {
         // Wednesday and Thursday are a holiday; the weekend is already off.
@@ -124,8 +121,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * A period made entirely of off days holds the streak: it neither grows nor breaks.
-     *
-     * @covers \mod_streak\local\engine::evaluate_period
      */
     public function test_an_all_off_period_holds_the_streak(): void {
         $state = (object) ['currentstreak' => 9, 'longeststreak' => 12, 'freezesavailable' => 0, 'freezesused' => 0];
@@ -139,8 +134,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * Practising on an off day grows the streak only when work-to-win is switched on.
-     *
-     * @covers \mod_streak\local\engine::evaluate_period
      */
     public function test_work_to_win_on_an_off_day(): void {
         $state = (object) ['currentstreak' => 9, 'longeststreak' => 12, 'freezesavailable' => 0, 'freezesused' => 0];
@@ -156,8 +149,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * Off days reduce the goal, so a learner is never asked for more days than the period offers.
-     *
-     * @covers \mod_streak\local\engine::evaluate_period
      */
     public function test_off_days_reduce_the_effective_goal(): void {
         $state = (object) ['currentstreak' => 3, 'longeststreak' => 3, 'freezesavailable' => 0, 'freezesused' => 0];
@@ -178,8 +169,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * The evaluator reads the instance mask, and falls back safely when it is missing or malformed.
-     *
-     * @covers \mod_streak\local\evaluator::mask
      */
     public function test_evaluator_reads_the_instance_mask(): void {
         $this->assertSame('1111100', local\evaluator::mask((object) ['activedays' => '1111100']));
@@ -189,8 +178,6 @@ final class activedays_test extends \advanced_testcase {
 
     /**
      * A working-week activity created from the site default carries the mask through to the engine.
-     *
-     * @covers ::streak_add_instance
      */
     public function test_a_working_week_activity_is_created_end_to_end(): void {
         global $DB;
