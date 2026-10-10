@@ -4,7 +4,7 @@ All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
 ## 0.11.0 — 2026-10-10
 
-Plugin version `2026101000`.
+Plugin version `2026101001`.
 
 ### Added
 
@@ -27,6 +27,9 @@ Plugin version `2026101000`.
 - **The activity index of a course without a Solin Streaks activity showed a debugging error**
   instead of a message. It asked for a core language string that does not exist in any Moodle
   version. It now says "There are no Solin Streaks activities in this course", as core modules do.
+- **The leaderboard's "Current streak" heading broke mid-word** ("Curren / t streak") on the
+  standard Boost theme. Core wraps inline activity content in a class that splits words at any
+  letter, and the streak column is narrow. The headings now wrap between words only.
 - A monthly streak period requested for a moment before the streak started returned a window
   ending the day before the streak's start. It now clamps to the first window, as the fortnightly
   period already did. No current code path asks for such a moment; the fix keeps the two rolling

@@ -112,6 +112,13 @@
 .mod-streak-board td {
     vertical-align: middle;
 }
+/* Core wraps inline activity content in .text-break, which splits words at any letter. The column
+   headings are short words in narrow columns ("Current streak" in 5rem), so let them wrap between
+   words only. Participant names keep the core behavior, so a very long name cannot overflow. */
+.mod-streak-board th {
+    word-break: normal;
+    overflow-wrap: normal;
+}
 
 /* Opt-out control + notes below the inline leaderboard. */
 .mod-streak-optout {
