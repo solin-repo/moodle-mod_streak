@@ -21,8 +21,9 @@ namespace mod_streak\local;
  *
  * A Moodle course is finite, so the goal is the course's own length (start date to end date), not an
  * arbitrary infinite ladder. The progress ring fills toward that goal and only ever moves backward if
- * the streak itself breaks. Weekly markers sit along the ring as milestones. When a course has no end
- * date, it falls back to a rolling weekly ring. Pure rule (no rendering); see
+ * the streak itself breaks. For a daily streak, weekly markers sit along the ring as milestones. When
+ * a course has no end date, a daily streak falls back to a rolling weekly ring. Pure rule (no
+ * rendering); see
  * docs/streaks-theming-contract.md.
  *
  * @package    mod_streak
@@ -62,17 +63,20 @@ final class milestone {
      * marker positions along it. With goal 0: a rolling weekly window (the ring shows the current
      * week's progress and repeats each week).
      *
+     * Weekly markers only make sense when each period is a day, so other cadences get none.
+     *
      * @param int $current The displayed streak length.
      * @param int $goal The goal in periods (0 = weekly fallback).
+     * @param string $period Cadence period of the streak.
      * @return array{mode: string, goal: int, value: int, remaining: int, percent: int, markers: int[]}
      */
-    public static function progress(int $current, int $goal): array {
+    public static function progress(int $current, int $goal, string $period = cadence::DAILY): array {
         $current = max(0, $current);
 
         if ($goal > 0) {
             $value = min($current, $goal);
             $markers = [];
-            for ($p = self::WEEK; $p < $goal; $p += self::WEEK) {
+            for ($p = self::WEEK; $period === cadence::DAILY && $p < $goal; $p += self::WEEK) {
                 $markers[] = (int) round($p / $goal * 100);
             }
             return [

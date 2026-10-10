@@ -240,4 +240,53 @@ final class widget_test extends \advanced_testcase {
         $this->assertSame([], $data['rows']);
         $this->assertFalse($data['hasmyrank']);
     }
+
+    public function test_the_course_milestone_counts_in_the_streak_period(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $PAGE->set_url('/');
+        $start = gmmktime(0, 0, 0, 1, 5, 2026);
+        // An 84-day course: 12 weeks, 6 fortnights, 2 months (milestone::goal_periods() counts 30-day months).
+        $expected = [
+            'weekly'      => ['milestonecourseweeks', 12],
+            'fortnightly' => ['milestonecoursefortnights', 6],
+            'monthly'     => ['milestonecoursemonths', 2],
+        ];
+        foreach ($expected as $period => [$stringid, $goal]) {
+            $course = $this->getDataGenerator()->create_course(['startdate' => $start, 'enddate' => $start + 84 * DAYSECS]);
+            $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+            [$streak, $cmid] = $this->make_streak($course, [
+                'cadenceperiod' => $period,
+                'cadencegoal'   => 1,
+                'enddatemode'   => 'course',
+            ]);
+            evaluator::credit($streak, (int) $student->id, $start + 12 * HOURSECS);
+
+            $widget = new widget($streak, (int) $student->id, $start + 13 * HOURSECS, $cmid);
+            $data = $widget->export_for_template($PAGE->get_renderer('mod_streak'));
+
+            $caption = get_string($stringid, 'mod_streak', (object) ['value' => 1, 'goal' => $goal]);
+            $this->assertSame($caption, $data['milestonecaption'], $period);
+            $this->assertTrue($data['hasmilestone'], $period);
+            // Weekly markers belong to a count of days; a count of weeks or months carries none.
+            $this->assertSame([], $data['milestonemarkers'], $period);
+        }
+    }
+
+    public function test_a_non_daily_streak_without_an_end_date_shows_no_milestone(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+        $PAGE->set_url('/');
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_and_enrol($course, 'student', ['timezone' => 'UTC']);
+        [$streak, $cmid] = $this->make_streak($course, ['cadenceperiod' => 'weekly', 'cadencegoal' => 1]);
+        $now = gmmktime(12, 0, 0, 6, 15, 2026);
+        evaluator::credit($streak, (int) $student->id, $now);
+
+        $data = (new widget($streak, (int) $student->id, $now, $cmid))->export_for_template($PAGE->get_renderer('mod_streak'));
+
+        // The rolling "Day N of 7 this week" only means something when each period is a day.
+        $this->assertFalse($data['hasmilestone']);
+        $this->assertSame(1, $data['display']);
+    }
 }

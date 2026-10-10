@@ -113,10 +113,13 @@ final class widget implements renderable, templatable {
         // Progress toward keeping the streak for the whole course (goal = course length): the basic widget
         // shows a slim bar; a theme can render the same percent as a ring. Only meaningful once started.
         $started = state::has_started($state);
-        $ms = milestone::progress($display, milestone::goal_periods($streak));
+        $ms = milestone::progress($display, milestone::goal_periods($streak), $streak->cadenceperiod);
+        // Without a course end date the fallback is a rolling "day N of 7" week, which only means
+        // something when each period is a day; other cadences then show no milestone at all.
+        $hasmilestone = $started && ($ms['mode'] === 'course' || $streak->cadenceperiod === cadence::DAILY);
         if ($ms['mode'] === 'course') {
             $milestonecaption = get_string(
-                'milestonecourse',
+                self::course_caption($streak->cadenceperiod),
                 'mod_streak',
                 (object) ['value' => $ms['value'], 'goal' => $ms['goal']]
             );
@@ -149,7 +152,7 @@ final class widget implements renderable, templatable {
             'unit'               => self::unit_label($streak->cadenceperiod, $display),
             'progress'           => $progress,
             'myavatar'           => $myavatar,
-            'hasmilestone'     => $started,
+            'hasmilestone'     => $hasmilestone,
             'milestonepercent' => $ms['percent'],
             'milestonemode'    => $ms['mode'],
             'milestonecaption' => $milestonecaption,
@@ -226,6 +229,25 @@ final class widget implements renderable, templatable {
             }
         }
         return null;
+    }
+
+    /**
+     * The string for "N of M <periods>" toward the course length, in the streak's own period.
+     *
+     * @param string $period Cadence period.
+     * @return string String identifier in mod_streak.
+     */
+    private static function course_caption(string $period): string {
+        switch ($period) {
+            case cadence::WEEKLY:
+                return 'milestonecourseweeks';
+            case cadence::FORTNIGHTLY:
+                return 'milestonecoursefortnights';
+            case cadence::MONTHLY:
+                return 'milestonecoursemonths';
+            default:
+                return 'milestonecourse';
+        }
     }
 
     /**

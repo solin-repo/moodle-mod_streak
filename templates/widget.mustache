@@ -29,11 +29,11 @@
     * unit string The "N-unit streak" label
     * progress string Intra-period progress text (empty for daily / when not shown)
     * myavatar object The viewer's own avatar data (see mod_streak/avatar; large=true)
-    * hasmilestone bool Whether to show progress (true once started)
+    * hasmilestone bool Whether to show progress (once started; not for a non-daily streak without a course end date)
     * milestonepercent int Percent (0-100) toward the goal (course length, or the current week)
     * milestonemode string "course" (goal = course length) or "weekly" (no end date: rolling week)
-    * milestonecaption string Localized progress caption ("N of M days" / "Day N of 7 this week")
-    * milestonemarkers array Weekly marker angles for a ring: [{angle}] (course mode; empty otherwise)
+    * milestonecaption string Localized progress caption ("N of M days", "N of M weeks", ... / "Day N of 7 this week")
+    * milestonemarkers array Weekly marker angles for a ring: [{angle}] (course mode, daily streak; empty otherwise)
     * hasmyrank bool Whether the viewer's leaderboard rank is known
     * myranklabel string "#N of M" rank label (when hasmyrank)
     * hasboard bool Whether the leaderboard is shown

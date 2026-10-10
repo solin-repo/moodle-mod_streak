@@ -4,7 +4,7 @@ All notable changes to Solin Streaks (`mod_streak`) are documented here.
 
 ## 0.11.0 — 2026-10-10
 
-Plugin version `2026101002`.
+Plugin version `2026101003`.
 
 ### Added
 
@@ -24,6 +24,14 @@ Plugin version `2026101002`.
 
 ### Fixed
 
+- **The progress caption counted in days for every streak period.** A weekly streak in a course with
+  an end date read "2 of 12 days" where it meant 2 of 12 weeks, and the same for fortnightly and
+  monthly streaks. It now names the period: "2 of 12 weeks", "1 of 6 fortnights", "1 of 2 months".
+  The ring's weekly markers are now shown for daily streaks only, where they mark weeks of days.
+- **A non-daily streak in a course without an end date showed "Day 2 of 7 this week"** under a
+  2-week streak, filling the ring as if each week were a day. That rolling-week fallback only
+  means something for a daily streak; other streak periods now show no progress caption when the
+  course has no end date.
 - **The activity index of a course without a Solin Streaks activity showed a debugging error**
   instead of a message. It asked for a core language string that does not exist in any Moodle
   version. It now says "There are no Solin Streaks activities in this course", as core modules do.

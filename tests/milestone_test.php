@@ -122,4 +122,14 @@ final class milestone_test extends \advanced_testcase {
             'cadenceperiod' => 'daily',
         ]));
     }
+
+    public function test_markers_only_for_a_count_of_days(): void {
+        $this->assertSame([12, 23, 35, 47, 58, 70, 82, 93], milestone::progress(10, 60)['markers']);
+        $this->assertSame([12, 23, 35, 47, 58, 70, 82, 93], milestone::progress(10, 60, 'daily')['markers']);
+        $this->assertSame([], milestone::progress(3, 12, 'weekly')['markers']);
+        $this->assertSame([], milestone::progress(1, 6, 'fortnightly')['markers']);
+        $this->assertSame([], milestone::progress(1, 2, 'monthly')['markers']);
+        // The fill itself is unchanged: 3 of 12 weeks is a quarter.
+        $this->assertSame(25, milestone::progress(3, 12, 'weekly')['percent']);
+    }
 }
